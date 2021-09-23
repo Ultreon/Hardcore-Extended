@@ -9,6 +9,7 @@ import com.zonlykroks.hardcoreex.render.LayerModel;
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -16,9 +17,12 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
+import net.minecraftforge.fml.event.server.FMLServerStoppedEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * HardcoreExtended Extended Mod class.
@@ -28,9 +32,11 @@ import org.apache.logging.log4j.Logger;
  * @since 0.1
  */
 @Mod("hardcoreex")
+@Mod.EventBusSubscriber(modid = HardcoreExtended.MOD_ID)
 public class HardcoreExtended {
     public static final String MOD_ID = "hardcoreex";
     public static final Logger LOGGER = LogManager.getLogger();
+    private static MinecraftServer server;
 
     /**
      * HardcoreExtended constructor.
@@ -63,6 +69,11 @@ public class HardcoreExtended {
         return new ResourceLocation(MOD_ID, path);
     }
 
+    @Nullable
+    public static MinecraftServer getServer() {
+        return server;
+    }
+
     /**
      * Common setup event.
      *
@@ -77,6 +88,16 @@ public class HardcoreExtended {
         Minecraft.getInstance().getRenderManager().getSkinMap().forEach((s, playerRenderer) -> {
             playerRenderer.addLayer(new LayerModel(playerRenderer));
         });
+    }
+
+    @SubscribeEvent
+    public static void onServerStarting(FMLServerStartingEvent event) {
+        server = event.getServer();
+    }
+
+    @SubscribeEvent
+    public static void onServerStoppedEvent(FMLServerStoppedEvent event) {
+        server = null;
     }
 
 

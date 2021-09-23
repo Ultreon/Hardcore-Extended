@@ -4,10 +4,13 @@
   "compatibilityLevel": "JAVA_8",
   "refmap": "hardcoreex.refmap.json",
   "mixins": [
-    "MinecraftServerMixin"
+    "MinecraftServerMixin",
+    "PlayerEntityMixin"
   ],
   "minVersion": "0.8",
   "client": [
+    "BedBlockMixin",
+    "MovementInputFromOptionsMixin",
     "PlayerControllerMixin",
     "ShareToLanScreenMixin",
     "WorldSelectionScreenMixin"

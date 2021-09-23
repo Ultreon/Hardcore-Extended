@@ -84,6 +84,7 @@ public class ChallengeManager {
                 Challenge value = ModChallenges.getRegistry().getValue(rl);
                 if (value != null) {
                     challengesEnabled.add(value);
+                    value.onEnable();
                 } else {
                     HardcoreExtended.LOGGER.warn("Challenge was not found: " + string);
                 }

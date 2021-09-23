@@ -1,7 +1,8 @@
 package com.zonlykroks.hardcoreex.challenge;
 
+import com.zonlykroks.hardcoreex.HardcoreExtended;
 import net.minecraft.client.Minecraft;
-import net.minecraft.server.integrated.IntegratedServer;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraft.world.storage.IServerWorldInfo;
@@ -28,24 +29,34 @@ public class NoDayChallenge extends Challenge {
      * Not needed to use it for this challenge, so it's empty.
      */
     public void tick() {
-        IntegratedServer integratedServer = Minecraft.getInstance().getIntegratedServer();
-        GameRules gameRules = null;
-        if (integratedServer != null) {
-            for (ServerWorld world : integratedServer.getWorlds()) {
-                IServerWorldInfo worldInfo = (IServerWorldInfo) (world.getWorldInfo());
-                worldInfo.setDayTime(18000);
-            }
-        }
     }
 
     @Override
     public void onDisable() {
-        IntegratedServer integratedServer = Minecraft.getInstance().getIntegratedServer();
-        GameRules gameRules = null;
-        if (integratedServer != null) {
-            for (ServerWorld world : integratedServer.getWorlds()) {
+        MinecraftServer server = HardcoreExtended.getServer();
+
+        HardcoreExtended.LOGGER.error("DISABLING NO DAY CHALLENGE");
+
+        if (server != null) {
+            GameRules.BooleanValue booleanValue = server.getGameRules().get(GameRules.DO_DAYLIGHT_CYCLE);
+            booleanValue.set(true, server);
+        }
+    }
+
+    @Override
+    public void onEnable() {
+        MinecraftServer server = HardcoreExtended.getServer();
+
+        HardcoreExtended.LOGGER.error("ENABLING NO DAY CHALLENGE");
+        HardcoreExtended.LOGGER.error("SERVER=" + server);
+
+        if (server != null) {
+            GameRules.BooleanValue booleanValue = server.getGameRules().get(GameRules.DO_DAYLIGHT_CYCLE);
+            booleanValue.set(false, server);
+
+            for (ServerWorld world : server.getWorlds()) {
                 IServerWorldInfo worldInfo = (IServerWorldInfo) (world.getWorldInfo());
-                worldInfo.setDayTime(0);
+                worldInfo.setDayTime(18000);
             }
         }
     }
