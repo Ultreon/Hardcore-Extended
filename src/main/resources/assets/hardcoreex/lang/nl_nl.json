@@ -1,7 +1,6 @@
 {
   "hardcoreex.failed_challenge.title": "Je hebt de %s challenge niet behaald!",
   "hardcoreex.failed_challenge.delete": "Verwijder wereld",
-
   "challenge.hardcoreex.no_damage": "Geen schade",
   "challenge.hardcoreex.no_day": "Alleen nacht",
   "challenge.hardcoreex.no_walking": "Zonder lopen",
@@ -9,5 +8,6 @@
   "challenge.hardcoreex.no_sprint": "Zonder rennen",
   "challenge.hardcoreex.no_healing": "Geen genezing",
   "challenge.hardcoreex.no_sleep": "Zonder slapen",
-  "challenge.hardcoreex.no_block_breaking": "Geen blokken breken"
+  "challenge.hardcoreex.no_block_breaking": "Geen blokken breken",
+  "message.hardcoreex.world_init": "Wachten op beschikbare challenges..."
 }

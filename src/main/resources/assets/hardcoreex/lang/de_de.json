@@ -2,7 +2,6 @@
   "hardcoreex.failed_challenge.title": "Du hast in der %s Challenge verloten!",
   "hardcoreex.failed_challenge.delete": "Welt löschen",
   "item.hardcoreex.config_item": "Hardcore Extended Config Item",
-
   "challenge.hardcoreex.no_damage": "Kein Schaden",
   "challenge.hardcoreex.no_day": "Permanente Nacht",
   "challenge.hardcoreex.no_walking": "Kein Laufen",

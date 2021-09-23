@@ -1,0 +1,15 @@
+{
+  "required": true,
+  "package": "com.zonlykroks.hardcoreex.mixin",
+  "compatibilityLevel": "JAVA_8",
+  "refmap": "hardcoreex.refmap.json",
+  "mixins": [
+    "MinecraftServerMixin"
+  ],
+  "minVersion": "0.8",
+  "client": [
+    "PlayerControllerMixin",
+    "ShareToLanScreenMixin",
+    "WorldSelectionScreenMixin"
+  ]
+}

@@ -1,0 +1,65 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "java",
+      "name": "runClient",
+      "request": "launch",
+      "mainClass": "net.minecraftforge.userdev.LaunchTesting",
+      "projectName": "hardcoreex",
+      "cwd": "${workspaceFolder}\\run",
+      "vmArgs": "-Dforge.logging.console.level\u003ddebug -Dforge.logging.markers\u003dSCAN,REGISTRIES,REGISTRYDUMP -Dnet.minecraftforge.gradle.GradleStart.srg.srg-mcp\u003dE:\\Projects\\Java\\hardcore-extended\\build\\createSrgToMcp\\output.srg -Dmixin.env.remapRefMap\u003dtrue -Dmixin.env.refMapRemappingFile\u003dE:\\Projects\\Java\\hardcore-extended\\build\\createSrgToMcp\\output.srg -XX:HeapDumpPath\u003dMojangTricksIntelDriversForPerformance_javaw.exe_minecraft.exe.heapdump \"-Dos.name\u003dWindows 10\" -Dos.version\u003d10.0",
+      "args": "-mixin.config\u003dhardcoreex.mixins.json",
+      "env": {
+        "MOD_CLASSES": "examplemod%%${workspaceFolder}\\bin\\main;examplemod%%${workspaceFolder}\\bin\\main",
+        "MCP_MAPPINGS": "snapshot_20210309-1.16.5",
+        "MCP_VERSION": "20201102.104115",
+        "FORGE_VERSION": "35.1.4",
+        "assetIndex": "1.16",
+        "assetDirectory": "C:\\Users\\quint\\.gradle\\caches\\forge_gradle\\assets",
+        "nativesDirectory": "${workspaceFolder}\\build\\natives",
+        "FORGE_GROUP": "net.minecraftforge",
+        "target": "fmluserdevclient",
+        "MC_VERSION": "1.16.4"
+      }
+    },
+    {
+      "type": "java",
+      "name": "runData",
+      "request": "launch",
+      "mainClass": "net.minecraftforge.userdev.LaunchTesting",
+      "projectName": "hardcoreex",
+      "cwd": "${workspaceFolder}\\run",
+      "vmArgs": "-Dforge.logging.console.level\u003ddebug -Dforge.logging.markers\u003dSCAN,REGISTRIES,REGISTRYDUMP -Dnet.minecraftforge.gradle.GradleStart.srg.srg-mcp\u003dE:\\Projects\\Java\\hardcore-extended\\build\\createSrgToMcp\\output.srg -Dmixin.env.remapRefMap\u003dtrue -Dmixin.env.refMapRemappingFile\u003dE:\\Projects\\Java\\hardcore-extended\\build\\createSrgToMcp\\output.srg",
+      "args": "--mod examplemod --all --output E:\\Projects\\Java\\hardcore-extended\\src\\generated\\resources --existing E:\\Projects\\Java\\hardcore-extended\\src\\main\\resources",
+      "env": {
+        "MOD_CLASSES": "examplemod%%${workspaceFolder}\\bin\\main;examplemod%%${workspaceFolder}\\bin\\main",
+        "MCP_MAPPINGS": "snapshot_20210309-1.16.5",
+        "MCP_VERSION": "20201102.104115",
+        "FORGE_VERSION": "35.1.4",
+        "FORGE_GROUP": "net.minecraftforge",
+        "target": "fmluserdevdata",
+        "MC_VERSION": "1.16.4"
+      }
+    },
+    {
+      "type": "java",
+      "name": "runServer",
+      "request": "launch",
+      "mainClass": "net.minecraftforge.userdev.LaunchTesting",
+      "projectName": "hardcoreex",
+      "cwd": "${workspaceFolder}\\run",
+      "vmArgs": "-Dforge.logging.console.level\u003ddebug -Dforge.logging.markers\u003dSCAN,REGISTRIES,REGISTRYDUMP -Dnet.minecraftforge.gradle.GradleStart.srg.srg-mcp\u003dE:\\Projects\\Java\\hardcore-extended\\build\\createSrgToMcp\\output.srg -Dmixin.env.remapRefMap\u003dtrue -Dmixin.env.refMapRemappingFile\u003dE:\\Projects\\Java\\hardcore-extended\\build\\createSrgToMcp\\output.srg",
+      "args": "-mixin.config\u003dhardcoreex.mixins.json",
+      "env": {
+        "MOD_CLASSES": "examplemod%%${workspaceFolder}\\bin\\main;examplemod%%${workspaceFolder}\\bin\\main",
+        "MCP_MAPPINGS": "snapshot_20210309-1.16.5",
+        "MCP_VERSION": "20201102.104115",
+        "FORGE_VERSION": "35.1.4",
+        "FORGE_GROUP": "net.minecraftforge",
+        "target": "fmluserdevserver",
+        "MC_VERSION": "1.16.4"
+      }
+    }
+  ]
+}

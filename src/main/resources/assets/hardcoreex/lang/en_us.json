@@ -2,7 +2,6 @@
   "hardcoreex.failed_challenge.title": "You failed the %s challenge!",
   "hardcoreex.failed_challenge.delete": "Delete World",
   "item.hardcoreex.config_item": "Hardcore Extended Config Item",
-
   "challenge.hardcoreex.no_damage": "No Damage",
   "challenge.hardcoreex.no_day": "Night Only",
   "challenge.hardcoreex.no_walking": "No Walking",
@@ -12,5 +11,6 @@
   "challenge.hardcoreex.no_sleep": "No Sleeping",
   "challenge.hardcoreex.no_block_breaking": "No Block Breaking",
   "challenge.hardcoreex.no_attack": "No Attacking",
-  "challenge.hardcoreex.only_fish": "Only Underwater Challenge"
+  "challenge.hardcoreex.only_fish": "Only Underwater Challenge",
+  "message.hardcoreex.world_init": "Waiting for available challenges..."
 }
