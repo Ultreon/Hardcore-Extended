@@ -1,11 +1,16 @@
 package com.zonlykroks.hardcoreex.challenge;
 
+import com.zonlykroks.hardcoreex.HardcoreExtended;
 import com.zonlykroks.hardcoreex.challenge.manager.ChallengeManager;
 import com.zonlykroks.hardcoreex.client.gui.ChallengeFailedScreen;
 import com.zonlykroks.hardcoreex.client.gui.widgets.ChallengeCompatibility;
 import com.zonlykroks.hardcoreex.common.IChallengeProvider;
+import com.zonlykroks.hardcoreex.network.ChallengeFailedPacket;
+import com.zonlykroks.hardcoreex.network.Network;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.client.Minecraft;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
@@ -13,6 +18,7 @@ import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.registries.IForgeRegistryEntry;
 import org.jetbrains.annotations.Nullable;
 
@@ -62,11 +68,11 @@ public abstract class Challenge implements IChallengeProvider, IForgeRegistryEnt
     }
 
     public void onEnable() {
-
+        MinecraftForge.EVENT_BUS.register(this);
     }
 
     public void onDisable() {
-
+        MinecraftForge.EVENT_BUS.unregister(this);
     }
 
     /**
@@ -178,7 +184,32 @@ public abstract class Challenge implements IChallengeProvider, IForgeRegistryEnt
     /**
      * Let the player know that the challenge was failed.
      */
-    protected final void failChallenge() {
+    public final void failChallenge(PlayerEntity player) {
+
+        DistExecutor.unsafeRunForDist(() -> () -> failChallengeClient(player), () -> () -> {
+            if (player instanceof ServerPlayerEntity) {
+                return failChallengeServer((ServerPlayerEntity) player);
+            } else {
+                HardcoreExtended.LOGGER.error("Expected " + ServerPlayerEntity.class.getName() + ", got: " + player.getClass().getName());
+                return null;
+            }
+        });
+
+    }
+
+    @Nullable
+    private <T> T failChallengeServer(ServerPlayerEntity player) {
+        Network.sendToClient(new ChallengeFailedPacket(this.registryName), player);
+        return null;
+    }
+
+    @Nullable
+    private <T> T failChallengeClient(PlayerEntity player) {
+        if (player instanceof ServerPlayerEntity) {
+            return failChallengeServer((ServerPlayerEntity) player);
+        }
+        Network.sendToServer(new ChallengeFailedPacket(this.registryName));
         Minecraft.getInstance().displayGuiScreen(new ChallengeFailedScreen(this));
+        return null;
     }
 }

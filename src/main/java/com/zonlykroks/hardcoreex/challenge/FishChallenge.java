@@ -1,10 +1,8 @@
 package com.zonlykroks.hardcoreex.challenge;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.util.DamageSource;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -29,19 +27,15 @@ public class FishChallenge extends Challenge {
         }
     }
 
-    @OnlyIn(Dist.CLIENT)
     @SubscribeEvent
     public void onDeath(LivingDeathEvent event) {
         // Cancel event, we don't want the player to die.
         event.setCanceled(true);
 
-        // Check if there's a client player.
-        if (Minecraft.getInstance().player != null) {
-            // Check if the entity is the client player.
-            if (event.getEntityLiving().getEntityId() == Minecraft.getInstance().player.getEntityId()) {
-                // Fail challenge.
-                this.failChallenge();
-            }
+        // Check for server side player entity.
+        if (event.getEntityLiving() instanceof ServerPlayerEntity) {
+            // Fail challenge.
+            this.failChallenge((PlayerEntity) event.getEntityLiving());
         }
     }
 }

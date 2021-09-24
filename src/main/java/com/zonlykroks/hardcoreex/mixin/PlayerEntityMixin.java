@@ -3,8 +3,6 @@ package com.zonlykroks.hardcoreex.mixin;
 import com.mojang.datafixers.util.Either;
 import com.zonlykroks.hardcoreex.challenge.manager.ChallengeManager;
 import com.zonlykroks.hardcoreex.init.ModChallenges;
-import net.minecraft.client.multiplayer.PlayerController;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;

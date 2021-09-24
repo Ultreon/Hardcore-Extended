@@ -120,7 +120,7 @@ public class ChallengeScreen extends Screen {
 
         // Render text.
         drawCenteredString(matrixStack, this.font, this.title, this.width / 2, 8, 16777215);
-        drawCenteredString(matrixStack, this.font, field_238884_b_, this.width / 2, 20, 16777215);
+//        drawCenteredString(matrixStack, this.font, field_238884_b_, this.width / 2, 20, 16777215);
 
         // Render super object.
         super.render(matrixStack, mouseX, mouseY, partialTicks);

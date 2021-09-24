@@ -22,12 +22,14 @@ public abstract class PlayerControllerMixin {
             ci.cancel();
         }
     }
+
     @Inject(method = "clickBlock(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/util/Direction;)Z", at = @At("HEAD"), cancellable = true)
     public void clickBlock(BlockPos loc, Direction face, CallbackInfoReturnable<Boolean> cir) {
         if (ChallengeManager.client.isEnabled(ModChallenges.NO_BLOCK_BREAKING)) {
             cir.setReturnValue(false);
         }
     }
+
     @Inject(method = "onPlayerDamageBlock(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/util/Direction;)Z", at = @At("HEAD"), cancellable = true)
     public void onPlayerDamageBlock(BlockPos posBlock, Direction directionFacing, CallbackInfoReturnable<Boolean> cir) {
         if (ChallengeManager.client.isEnabled(ModChallenges.NO_BLOCK_BREAKING)) {

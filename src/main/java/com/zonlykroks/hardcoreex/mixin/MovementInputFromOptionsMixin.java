@@ -14,7 +14,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(MovementInputFromOptions.class)
 public abstract class MovementInputFromOptionsMixin extends MovementInput {
-    @Shadow @Final private GameSettings gameSettings;
+    @Shadow
+    @Final
+    private GameSettings gameSettings;
 
     @Inject(method = "tickMovement(Z)V", at = @At("HEAD"), cancellable = true)
     public void tickMovement(boolean isForced, CallbackInfo ci) {
@@ -22,8 +24,8 @@ public abstract class MovementInputFromOptionsMixin extends MovementInput {
             this.jump = this.gameSettings.keyBindJump.isKeyDown();
             this.sneaking = this.gameSettings.keyBindSneak.isKeyDown();
             if (isForced) {
-                this.moveStrafe = (float)((double)this.moveStrafe * 0.3D);
-                this.moveForward = (float)((double)this.moveForward * 0.3D);
+                this.moveStrafe = (float) ((double) this.moveStrafe * 0.3D);
+                this.moveForward = (float) ((double) this.moveForward * 0.3D);
             }
             ci.cancel();
         }
