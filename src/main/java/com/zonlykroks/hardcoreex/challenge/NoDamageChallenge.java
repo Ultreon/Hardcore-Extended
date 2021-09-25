@@ -13,25 +13,18 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
  * @author Qboi123
  */
 public class NoDamageChallenge extends Challenge {
+    /**
+     * Constructor for this challenge object.
+     */
     public NoDamageChallenge() {
         super();
     }
 
     /**
-     * An example tick event.
-     * Used to do things like in the no-day challenge.
-     * <p>
-     * Not needed to use it for this challenge, so it's empty.
-     */
-    public void tick() {
-
-    }
-
-    /**
-     * An example event.
-     * This event checks for damage by the player.
+     * Event handler for living entity damage.
      *
-     * @param event the event used for the no-damage challenge.
+     * @param event the event that this method subscribes to.
+     * @apiNote should not be invoked outside event bus.
      */
     @SubscribeEvent
     public void onDamage(LivingDamageEvent event) {
@@ -39,24 +32,6 @@ public class NoDamageChallenge extends Challenge {
             return;
         }
 
-        // Cancel event, we don't want the player to die.
-        event.setCanceled(true);
-
-        // Check for server side player entity.
-        if (event.getEntityLiving() instanceof ServerPlayerEntity) {
-            // Fail challenge.
-            this.failChallenge((PlayerEntity) event.getEntityLiving());
-        }
-    }
-
-    /**
-     * An example event.
-     * This event checks for damage by the player.
-     *
-     * @param event the event used for the no-damage challenge.
-     */
-    @SubscribeEvent
-    public void onDeath(LivingDeathEvent event) {
         // Cancel event, we don't want the player to die.
         event.setCanceled(true);
 
