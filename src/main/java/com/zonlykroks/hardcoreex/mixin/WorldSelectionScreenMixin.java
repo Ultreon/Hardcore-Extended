@@ -1,6 +1,7 @@
 package com.zonlykroks.hardcoreex.mixin;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
+import com.zonlykroks.hardcoreex.config.ConfigBuilder;
 import net.minecraft.client.gui.screen.CreateWorldScreen;
 import net.minecraft.client.gui.widget.button.Button;
 import org.spongepowered.asm.mixin.Mixin;
@@ -22,13 +23,17 @@ public abstract class WorldSelectionScreenMixin {
 
     @Inject(method = "render(Lcom/mojang/blaze3d/matrix/MatrixStack;IIF)V", at = @At("HEAD"))
     public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks, CallbackInfo ci) {
-        this.func_228200_a_(CreateWorldScreen.GameMode.HARDCORE);
-        this.btnGameMode.active = false;
+        if (ConfigBuilder.forceHardcore.get()) {
+            this.func_228200_a_(CreateWorldScreen.GameMode.HARDCORE);
+            this.btnGameMode.active = false;
+        }
     }
 
     @Inject(method = "init()V", at = @At("RETURN"))
     protected void init(CallbackInfo ci) {
-        this.func_228200_a_(CreateWorldScreen.GameMode.HARDCORE);
-        this.btnGameMode.active = false;
+        if (ConfigBuilder.forceHardcore.get()) {
+            this.func_228200_a_(CreateWorldScreen.GameMode.HARDCORE);
+            this.btnGameMode.active = false;
+        }
     }
 }

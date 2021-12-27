@@ -6,23 +6,29 @@ import com.zonlykroks.hardcoreex.client.gui.ChallengeFailedScreen;
 import com.zonlykroks.hardcoreex.client.gui.widgets.ChallengeCompatibility;
 import com.zonlykroks.hardcoreex.common.IChallengeProvider;
 import com.zonlykroks.hardcoreex.network.ChallengeFailedPacket;
-import com.zonlykroks.hardcoreex.network.Network;
+import com.zonlykroks.hardcoreex.network.Networking;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.client.Minecraft;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.event.entity.EntityJoinWorldEvent;
+import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.registries.IForgeRegistryEntry;
 import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.ParametersAreNonnullByDefault;
+import java.util.Objects;
 
 /**
  * @author Qboi123
@@ -35,6 +41,7 @@ public abstract class Challenge implements IChallengeProvider, IForgeRegistryEnt
     private ForgeConfigSpec.BooleanValue configSpec;
 
     private ResourceLocation registryName;
+    private boolean started;
 
     public Challenge() {
 
@@ -118,7 +125,48 @@ public abstract class Challenge implements IChallengeProvider, IForgeRegistryEnt
     /**
      * Tick the challenge, in fact a client-tick event.
      */
-    protected abstract void tick();
+    protected void tick() {
+
+    }
+
+    /**
+     * Player tick event handling
+     */
+    @SubscribeEvent
+    public final void onPlayerTick(TickEvent.PlayerTickEvent event) {
+        playerTick(event.player);
+    }
+
+    /**
+     * Server tick event handling
+     */
+    @SubscribeEvent()
+    public final void onServerTick(TickEvent.ServerTickEvent event) {
+        if (event.phase == TickEvent.Phase.START) {
+            serverTick(Objects.requireNonNull(HardcoreExtended.getServer()));
+        }
+    }
+
+    /**
+     * Server tick event handling
+     */
+    @SubscribeEvent
+    public final void onServerTick(TickEvent.WorldTickEvent event) {
+        worldTick((ServerWorld) event.world);
+    }
+
+    protected void playerTick(PlayerEntity player) {
+
+    }
+
+//    @SubscribeEvent
+//    protected void onPlayerMove(EntityJoinWorldEvent event) {
+//        Entity entity = event.getEntity();
+//        if (entity instanceof ServerPlayerEntity && !started) {
+//            joined = true;
+//            this.startingCoords = entity.getPositionVec();
+//        }
+//    }
 
     @Nullable
     @Override
@@ -159,19 +207,33 @@ public abstract class Challenge implements IChallengeProvider, IForgeRegistryEnt
     }
 
     /**
+     * Receive boolean value of whether the challenge is enabled or not.
+     * True means it's enabled. Opposite of {@link #isDisabled(boolean)}
+     *
+     * @param clientSide true if it's called client side, false for serve side.
      * @return if the challenge is enabled.
      */
-    @Deprecated
-    public boolean isEnabled() {
-        return enabled;
+    public boolean isEnabled(boolean clientSide) {
+        return clientSide ? this.isEnabled$client() : this.isEnabled$server();
+    }
+
+    private boolean isEnabled$server() {
+        return ChallengeManager.client.isEnabled(this);
+    }
+
+    private boolean isEnabled$client() {
+        return ChallengeManager.client.isEnabled(this);
     }
 
     /**
+     * Receive boolean value of whether the challenge is disabled or not.
+     * True means it's disabled. Opposite of {@link #isEnabled(boolean)}
+     *
+     * @param clientSide true if it's called client side, false for serve side.
      * @return if the challenge is disabled.
      */
-    @Deprecated
-    public boolean isDisabled() {
-        return !enabled;
+    public boolean isDisabled(boolean clientSide) {
+        return !isEnabled(clientSide);
     }
 
     /**
@@ -199,7 +261,7 @@ public abstract class Challenge implements IChallengeProvider, IForgeRegistryEnt
 
     @Nullable
     private <T> T failChallengeServer(ServerPlayerEntity player) {
-        Network.sendToClient(new ChallengeFailedPacket(this.registryName), player);
+        Networking.sendToClient(new ChallengeFailedPacket(this.registryName), player);
         return null;
     }
 
@@ -208,8 +270,28 @@ public abstract class Challenge implements IChallengeProvider, IForgeRegistryEnt
         if (player instanceof ServerPlayerEntity) {
             return failChallengeServer((ServerPlayerEntity) player);
         }
-        Network.sendToServer(new ChallengeFailedPacket(this.registryName));
+        Networking.sendToServer(new ChallengeFailedPacket(this.registryName));
         Minecraft.getInstance().displayGuiScreen(new ChallengeFailedScreen(this));
         return null;
+    }
+
+    @SubscribeEvent
+    public final void onDeath(LivingDeathEvent event) {
+        // Cancel event, we don't want the player to die.
+        event.setCanceled(true);
+
+        // Check for server side player entity.
+        if (event.getEntityLiving() instanceof ServerPlayerEntity) {
+            // Fail challenge.
+            this.failChallenge((PlayerEntity) event.getEntityLiving());
+        }
+    }
+
+    protected void worldTick(ServerWorld world) {
+
+    }
+
+    protected void serverTick(MinecraftServer server) {
+
     }
 }

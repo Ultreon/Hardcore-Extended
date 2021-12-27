@@ -2,6 +2,8 @@ package com.zonlykroks.hardcoreex.render;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
+import com.zonlykroks.hardcoreex.challenge.manager.ChallengeManager;
+import com.zonlykroks.hardcoreex.init.ModChallenges;
 import net.minecraft.client.entity.player.AbstractClientPlayerEntity;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.RenderType;
@@ -23,14 +25,16 @@ public class LayerModel extends LayerRenderer<AbstractClientPlayerEntity, Player
 
     @Override
     public void render(MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int packedLightIn, @NotNull AbstractClientPlayerEntity entitylivingbaseIn, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
-        matrixStackIn.push();
-        IVertexBuilder vertexBuilder = bufferIn.getBuffer(RenderType.getEntityTranslucentCull(SALMON_LOCATION));
-        SalmonModel<Entity> model = new SalmonModel<>();
-        model.setRotationAngles(entitylivingbaseIn, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch);
-        if (entitylivingbaseIn.isInWater() && entitylivingbaseIn.isSprinting()) {
-            matrixStackIn.rotate(new Quaternion(270, 0, 0, true));
+        if (ChallengeManager.client.isEnabled(ModChallenges.ONLY_FISH)) {
+            matrixStackIn.push();
+            IVertexBuilder vertexBuilder = bufferIn.getBuffer(RenderType.getEntityTranslucentCull(SALMON_LOCATION));
+            SalmonModel<Entity> model = new SalmonModel<>();
+            model.setRotationAngles(entitylivingbaseIn, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch);
+            if (entitylivingbaseIn.isInWater() && entitylivingbaseIn.isSprinting()) {
+                matrixStackIn.rotate(new Quaternion(270, 0, 0, true));
+            }
+            model.render(matrixStackIn, vertexBuilder, packedLightIn, packedLightIn + 1, 1.0F, 1.0F, 1.0F, 1.0F);
+            matrixStackIn.pop();
         }
-        model.render(matrixStackIn, vertexBuilder, packedLightIn, packedLightIn + 1, 1.0F, 1.0F, 1.0F, 1.0F);
-        matrixStackIn.pop();
     }
 }

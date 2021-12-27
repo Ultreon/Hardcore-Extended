@@ -8,10 +8,11 @@
   "challenge.hardcoreex.no_walking": "Walking Paralysis",
   "challenge.hardcoreex.no_jumping": "Jump Paralysis",
   "challenge.hardcoreex.no_sprint": "Unable to Sprint",
-  "challenge.hardcoreex.no_healing": "Unhealable",
+  "challenge.hardcoreex.no_healing": "No regeneration",
   "challenge.hardcoreex.no_sleep": "Insomnia",
   "challenge.hardcoreex.no_block_breaking": "No Block Breaking",
   "challenge.hardcoreex.no_attack": "Nonviolent",
   "challenge.hardcoreex.only_fish": "Only Underwater",
-  "message.hardcoreex.world_init": "Waiting for available challenges..."
+  "message.hardcoreex.world_init": "Waiting for available challenges...",
+  "message.hardcoreex.insomnia.not_tired": "You aren't tired yet."
 }

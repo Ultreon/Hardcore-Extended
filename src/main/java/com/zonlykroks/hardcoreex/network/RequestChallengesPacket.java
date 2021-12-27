@@ -4,19 +4,17 @@ import com.zonlykroks.hardcoreex.HardcoreExtended;
 import com.zonlykroks.hardcoreex.challenge.Challenge;
 import com.zonlykroks.hardcoreex.challenge.manager.ChallengeManager;
 import com.zonlykroks.hardcoreex.client.gui.ChallengeScreen;
+import com.zonlykroks.hardcoreex.event.CommonEvents;
 import com.zonlykroks.hardcoreex.init.ModChallenges;
 import net.minecraft.client.Minecraft;
+import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.network.NetworkManager;
 import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.fml.DistExecutor;
-import net.minecraftforge.fml.network.NetworkDirection;
-import net.minecraftforge.fml.network.NetworkEvent;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
-import java.util.function.Supplier;
 
-public class RequestChallengesPacket {
+public class RequestChallengesPacket extends PacketToServer<RequestChallengesPacket> {
     public RequestChallengesPacket(PacketBuffer buffer) {
 
     }
@@ -25,28 +23,27 @@ public class RequestChallengesPacket {
 
     }
 
-    public void handle(Supplier<NetworkEvent.Context> context) {
-        context.get().enqueueWork(() -> {
-            HardcoreExtended.LOGGER.info("Challenges requested.");
-            if (context.get().getDirection() == NetworkDirection.PLAY_TO_SERVER) {
-                HardcoreExtended.LOGGER.info("Challenges requested.");
-                // Initialization here.
-                for (Challenge challenge : ModChallenges.getRegistry().getValues()) {
-                    if (ChallengeManager.server.isEnabled(challenge)) {
-                        Network.sendToClient(new SEnableChallengePacket(challenge.getRegistryName()), Objects.requireNonNull(context.get().getSender()));
-                    }
+    @Override
+    protected void handle(@NotNull NetworkManager connection, @NotNull ServerPlayerEntity sender) {
+        HardcoreExtended.LOGGER.info("Challenges requested.");
+        if (CommonEvents.isFirstJoin()) {
+            // Initialization here.
+            for (Challenge challenge : ModChallenges.getRegistry().getValues()) {
+                if (ChallengeManager.server.isEnabled(challenge)) {
+                    Networking.sendToClient(new ChallengeEnabledPacket(challenge.getRegistryName()), Objects.requireNonNull(sender));
                 }
-                Network.sendToClient(new Accepted(), Objects.requireNonNull(context.get().getSender()));
             }
-        });
-        context.get().setPacketHandled(true);
+            Networking.sendToClient(new Accepted(), Objects.requireNonNull(sender));
+        } else {
+            Networking.sendToClient(new Rejected(), Objects.requireNonNull(sender));
+        }
     }
 
     public void toBytes(PacketBuffer buffer) {
 
     }
 
-    public static class Accepted {
+    public static class Accepted extends PacketToClient<Accepted> {
         public Accepted(PacketBuffer buffer) {
 
         }
@@ -55,26 +52,34 @@ public class RequestChallengesPacket {
 
         }
 
-        public void handle(Supplier<NetworkEvent.Context> context) {
-            DistExecutor.unsafeRunForDist(() -> () -> this.handle0(context), () -> () -> null);
-        }
-
-        @OnlyIn(Dist.CLIENT)
-        private <T> T handle0(Supplier<NetworkEvent.Context> context) {
-            context.get().enqueueWork(() -> {
-                HardcoreExtended.LOGGER.info("Challenges accepted.");
-                if (context.get().getDirection() == NetworkDirection.PLAY_TO_CLIENT) {
-                    HardcoreExtended.LOGGER.info("Challenges accepted.");
-                    Minecraft.getInstance().displayGuiScreen(new ChallengeScreen(null));
-                }
-            });
-            context.get().setPacketHandled(true);
-            return null;
+        @Override
+        protected void handle(NetworkManager connection) {
+            HardcoreExtended.LOGGER.info("Challenges accepted.");
+            Minecraft.getInstance().displayGuiScreen(new ChallengeScreen(null));
         }
 
         public void toBytes(PacketBuffer buffer) {
 
         }
+    }
 
+    public static class Rejected extends PacketToClient<Rejected> {
+        public Rejected(PacketBuffer buffer) {
+
+        }
+
+        public Rejected() {
+
+        }
+
+        @Override
+        protected void handle(NetworkManager connection) {
+            HardcoreExtended.LOGGER.info("Challenges rejected.");
+            Minecraft.getInstance().displayGuiScreen(null);
+        }
+
+        public void toBytes(PacketBuffer buffer) {
+
+        }
     }
 }

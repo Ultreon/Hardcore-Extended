@@ -19,7 +19,12 @@ public class NoAttackingChallenge extends Challenge {
     protected void tick() {
     }
 
-    @OnlyIn(Dist.CLIENT)
+    /**
+     * Event handler for living entity damage.
+     *
+     * @param event the event that this method subscribes to.
+     * @apiNote should not be invoked outside event bus.
+     */
     @SubscribeEvent
     public void onLivingDamage(LivingDamageEvent event) {
         if (event.getSource().getTrueSource() instanceof PlayerEntity) {
@@ -27,7 +32,12 @@ public class NoAttackingChallenge extends Challenge {
         }
     }
 
-    @OnlyIn(Dist.CLIENT)
+    /**
+     * Event handler for living entity hurting.
+     *
+     * @param event the event that this method subscribes to.
+     * @apiNote should not be invoked outside event bus.
+     */
     @SubscribeEvent
     public void onLivingHurt(LivingHurtEvent event) {
         if (event.getSource().getTrueSource() instanceof PlayerEntity) {
@@ -35,23 +45,16 @@ public class NoAttackingChallenge extends Challenge {
         }
     }
 
-    @OnlyIn(Dist.CLIENT)
+    /**
+     * Event handler for living entity death.
+     *
+     * @param event the event that this method subscribes to.
+     * @apiNote should not be invoked outside event bus.
+     */
     @SubscribeEvent
     public void onLivingDeath(LivingDeathEvent event) {
         if (event.getSource().getTrueSource() instanceof PlayerEntity) {
             event.setCanceled(true);
-        }
-    }
-
-    @SubscribeEvent
-    public void onDeath(LivingDeathEvent event) {
-        // Cancel event, we don't want the player to die.
-        event.setCanceled(true);
-
-        // Check for server side player entity.
-        if (event.getEntityLiving() instanceof ServerPlayerEntity) {
-            // Fail challenge.
-            this.failChallenge((PlayerEntity) event.getEntityLiving());
         }
     }
 }

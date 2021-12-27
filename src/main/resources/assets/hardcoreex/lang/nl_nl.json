@@ -13,5 +13,6 @@
   "challenge.hardcoreex.no_block_breaking": "Geen blokken breken",
   "challenge.hardcoreex.no_attack": "Geweldloos",
   "challenge.hardcoreex.only_fish": "Alleen Onderwater",
-  "message.hardcoreex.world_init": "Wachten op beschikbare challenges..."
+  "message.hardcoreex.world_init": "Wachten op beschikbare challenges...",
+  "message.hardcoreex.insomnia.not_tired": "Je bent nog niet moe."
 }

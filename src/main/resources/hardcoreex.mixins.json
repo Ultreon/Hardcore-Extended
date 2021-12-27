@@ -4,6 +4,7 @@
   "compatibilityLevel": "JAVA_8",
   "refmap": "hardcoreex.refmap.json",
   "mixins": [
+    "AbstractBlockStateMixin",
     "MinecraftServerMixin",
     "PlayerEntityMixin"
   ],

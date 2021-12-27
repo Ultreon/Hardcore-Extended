@@ -1,7 +1,7 @@
 package com.zonlykroks.hardcoreex.event;
 
 import com.zonlykroks.hardcoreex.HardcoreExtended;
-import com.zonlykroks.hardcoreex.network.Network;
+import com.zonlykroks.hardcoreex.network.Networking;
 import com.zonlykroks.hardcoreex.network.RequestChallengesPacket;
 import net.minecraft.client.gui.screen.DirtMessageScreen;
 import net.minecraft.util.text.TranslationTextComponent;
@@ -21,7 +21,7 @@ public class ClientEvents {
             DirtMessageScreen screen = new DirtMessageScreen(new TranslationTextComponent("message.hardcoreex.world_init"));
             event.setGui(screen);
             joined = true;
-            Network.sendToServer(new RequestChallengesPacket());
+            Networking.sendToServer(new RequestChallengesPacket());
         }
     }
 

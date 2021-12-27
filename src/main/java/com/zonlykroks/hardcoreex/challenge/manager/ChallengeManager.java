@@ -36,18 +36,18 @@ public class ChallengeManager {
             challengesEnabled.add(challenge);
             challenge.onEnable();
             if (this == client) {
-                Network.sendToServer(new CEnableChallengePacket(challenge.getRegistryName()));
+                Networking.sendToServer(new EnableChallengePacket(challenge.getRegistryName()));
             }
         } else if (!value && challengesEnabled.contains(challenge)) {
             challengesEnabled.remove(challenge);
             challenge.onDisable();
             if (this == client) {
-                Network.sendToServer(new CDisableChallengePacket(challenge.getRegistryName()));
+                Networking.sendToServer(new DisableChallengePacket(challenge.getRegistryName()));
             }
         }
     }
 
-    public void readPacket(SEnableChallengePacket packet) {
+    public void readPacket(ChallengeEnabledPacket packet) {
         Challenge challenge = ModChallenges.getRegistry().getValue(packet.getChallenge());
         if (!challengesEnabled.contains(challenge) && challenge != null) {
             challengesEnabled.add(challenge);
@@ -55,7 +55,7 @@ public class ChallengeManager {
         }
     }
 
-    public void readPacket(SDisableChallengePacket packet) {
+    public void readPacket(ChallengeDisabledPacket packet) {
         Challenge challenge = ModChallenges.getRegistry().getValue(packet.getChallenge());
         if (challengesEnabled.contains(challenge) && challenge != null) {
             challengesEnabled.add(challenge);
@@ -92,8 +92,8 @@ public class ChallengeManager {
         }
     }
 
-    public boolean isEnabled(Supplier<? extends Challenge> noAttack) {
-        return isEnabled(noAttack.get());
+    public boolean isEnabled(Supplier<? extends Challenge> supplier) {
+        return isEnabled(supplier.get());
     }
 
     public boolean isDisabled(Challenge challenge) {

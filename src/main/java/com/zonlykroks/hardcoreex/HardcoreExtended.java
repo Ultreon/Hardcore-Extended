@@ -4,7 +4,7 @@ import com.zonlykroks.hardcoreex.config.Config;
 import com.zonlykroks.hardcoreex.event.PlayerJoinWorldEvent;
 import com.zonlykroks.hardcoreex.init.ModChallenges;
 import com.zonlykroks.hardcoreex.init.ModItems;
-import com.zonlykroks.hardcoreex.network.Network;
+import com.zonlykroks.hardcoreex.network.Networking;
 import com.zonlykroks.hardcoreex.render.LayerModel;
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemGroup;
@@ -53,7 +53,7 @@ public class HardcoreExtended {
         Config.sync();
         Config.init();
 
-        Network.initialize();
+        Networking.initialize();
 
         MinecraftForge.EVENT_BUS.register(PlayerJoinWorldEvent.class);
 

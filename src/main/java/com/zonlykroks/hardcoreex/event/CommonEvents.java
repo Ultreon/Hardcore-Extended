@@ -17,6 +17,8 @@ import java.io.IOException;
 
 @Mod.EventBusSubscriber(value = {Dist.CLIENT, Dist.DEDICATED_SERVER}, modid = HardcoreExtended.MOD_ID)
 public class CommonEvents {
+    private static boolean firstJoin = false;
+
     @SubscribeEvent
     public static void onServerStarted(FMLServerStartedEvent event) {
         MinecraftServer server = event.getServer();
@@ -29,9 +31,13 @@ public class CommonEvents {
             ListNBT challengesEnabled = worldData.getList("ChallengesEnabled", 8);
             ChallengeManager.server.read(challengesEnabled);
         } catch (FileNotFoundException ignored) {
-
+            firstJoin = true;
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public static boolean isFirstJoin() {
+        return firstJoin && PlayerJoinWorldEvent.isFirstJoin();
     }
 }

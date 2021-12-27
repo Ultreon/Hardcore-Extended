@@ -13,8 +13,8 @@ import net.minecraftforge.fml.network.simple.SimpleChannel;
 import java.util.Objects;
 
 @SuppressWarnings("UnusedAssignment")
-public final class Network {
-    private static final String VERSION = "hardcoreex-net2";
+public final class Networking {
+    private static final String VERSION = "hardcore-ex network 2021.12.26-23.00";
 
     public static NetworkManager getManager() {
         return Objects.requireNonNull(Minecraft.getInstance().getConnection()).getNetworkManager();
@@ -48,36 +48,60 @@ public final class Network {
         channel.messageBuilder(RequestChallengesPacket.class, id++)
                 .decoder(RequestChallengesPacket::new)
                 .encoder(RequestChallengesPacket::toBytes)
-                .consumer(RequestChallengesPacket::handle)
+                .consumer((packet, context) -> {
+                    packet.handle(context);
+                })
                 .add();
         channel.messageBuilder(RequestChallengesPacket.Accepted.class, id++)
                 .decoder(RequestChallengesPacket.Accepted::new)
                 .encoder(RequestChallengesPacket.Accepted::toBytes)
-                .consumer(RequestChallengesPacket.Accepted::handle)
+                .consumer((packet, context) -> {
+                    packet.handle(context);
+                })
                 .add();
-        channel.messageBuilder(SEnableChallengePacket.class, id++)
-                .decoder(SEnableChallengePacket::new)
-                .encoder(SEnableChallengePacket::toBytes)
-                .consumer(SEnableChallengePacket::handle)
+        channel.messageBuilder(RequestChallengesPacket.Rejected.class, id++)
+                .decoder(RequestChallengesPacket.Rejected::new)
+                .encoder(RequestChallengesPacket.Rejected::toBytes)
+                .consumer((packet, context) -> {
+                    packet.handle(context);
+                })
                 .add();
-        channel.messageBuilder(SDisableChallengePacket.class, id++)
-                .decoder(SDisableChallengePacket::new)
-                .encoder(SDisableChallengePacket::toBytes)
-                .consumer(SDisableChallengePacket::handle)
+        channel.messageBuilder(ChallengeEnabledPacket.class, id++)
+                .decoder(ChallengeEnabledPacket::new)
+                .encoder(ChallengeEnabledPacket::toBytes)
+                .consumer((packet, context) -> {
+                    packet.handle(context);
+                })
                 .add();
-        channel.messageBuilder(CEnableChallengePacket.class, id++)
-                .decoder(CEnableChallengePacket::new)
-                .encoder(CEnableChallengePacket::toBytes)
-                .consumer(CEnableChallengePacket::handle)
+        channel.messageBuilder(ChallengeDisabledPacket.class, id++)
+                .decoder(ChallengeDisabledPacket::new)
+                .encoder(ChallengeDisabledPacket::toBytes)
+                .consumer((packet, context) -> {
+                    packet.handle(context);
+                })
                 .add();
-        channel.messageBuilder(CDisableChallengePacket.class, id++)
-                .decoder(CDisableChallengePacket::new)
-                .encoder(CDisableChallengePacket::toBytes)
-                .consumer(CDisableChallengePacket::handle)
+        channel.messageBuilder(EnableChallengePacket.class, id++)
+                .decoder(EnableChallengePacket::new)
+                .encoder(EnableChallengePacket::toBytes)
+                .consumer((packet, context) -> {
+                    packet.handle(context);
+                })
+                .add();
+        channel.messageBuilder(DisableChallengePacket.class, id++)
+                .decoder(DisableChallengePacket::new)
+                .encoder(DisableChallengePacket::toBytes)
+                .consumer((packet, context) -> {
+                    packet.handle(context);
+                })
+                .add();
+        channel.messageBuilder(SetupDonePacket.class, id++)
+                .decoder(buffer -> new SetupDonePacket())
+                .encoder(SetupDonePacket::toBytes)
+                .consumer(SetupDonePacket::handle)
                 .add();
     }
 
-    private Network() {
+    private Networking() {
     }
 
     public static void initialize() {

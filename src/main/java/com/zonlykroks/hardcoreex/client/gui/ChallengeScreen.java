@@ -5,6 +5,8 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import com.zonlykroks.hardcoreex.challenge.Challenge;
 import com.zonlykroks.hardcoreex.challenge.manager.ChallengeManager;
 import com.zonlykroks.hardcoreex.client.gui.widgets.ChallengeList;
+import com.zonlykroks.hardcoreex.network.Networking;
+import com.zonlykroks.hardcoreex.network.SetupDonePacket;
 import net.minecraft.client.gui.DialogTexts;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.button.Button;
@@ -49,7 +51,7 @@ public class ChallengeScreen extends Screen {
     }
 
     protected void init() {
-        Button closeButton = this.addButton(new Button(this.width / 2 - 75, this.height - 48, 150, 20, DialogTexts.GUI_DONE, (p_238903_1_) -> this.closeScreen()));
+        Button doneButton = this.addButton(new Button(this.width / 2 - 75, this.height - 48, 150, 20, DialogTexts.GUI_DONE, this::done));
 
         // Todo: allow creating custom challenges using challenge packs.
 //      this.addButton(new Button(this.width / 2 - 154, this.height - 48, 150, 20, new TranslationTextComponent("pack.openFolder"), (p_238896_1_) -> {
@@ -136,6 +138,11 @@ public class ChallengeScreen extends Screen {
 
     public List<Challenge> getDisabled() {
         return disabled;
+    }
+
+    private void done(Button p_238903_1_) {
+        Networking.sendToServer(new SetupDonePacket());
+        this.closeScreen();
     }
 
     // Todo: allow loading of custom challenges.

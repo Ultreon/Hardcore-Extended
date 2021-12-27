@@ -14,9 +14,9 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
  *
  * @author zOnlyKroks, Qboi123
  */
-public class NoWalkingChallenge extends Challenge {
+public class WalkingParalysisChallenge extends Challenge {
 
-    public NoWalkingChallenge() {
+    public WalkingParalysisChallenge() {
         super();
     }
 
@@ -32,17 +32,5 @@ public class NoWalkingChallenge extends Challenge {
         double y = player.getMotion().y;
         double z = -player.getMotion().z;
         player.setMotion(0, y, 0);
-    }
-
-    @SubscribeEvent
-    public void onDeath(LivingDeathEvent event) {
-        // Cancel event, we don't want the player to die.
-        event.setCanceled(true);
-
-        // Check for server side player entity.
-        if (event.getEntityLiving() instanceof ServerPlayerEntity) {
-            // Fail challenge.
-            this.failChallenge((PlayerEntity) event.getEntityLiving());
-        }
     }
 }
