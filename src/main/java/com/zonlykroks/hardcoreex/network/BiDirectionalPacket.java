@@ -12,7 +12,7 @@ public abstract class BiDirectionalPacket<T extends BiDirectionalPacket<T>> exte
     }
 
     @Override
-    public final void handle(Supplier<NetworkEvent.Context> context) {
+    public final boolean handle(Supplier<NetworkEvent.Context> context) {
         NetworkEvent.Context ctx = context.get();
         switch (ctx.getDirection()) {
             case PLAY_TO_CLIENT:
@@ -25,6 +25,7 @@ public abstract class BiDirectionalPacket<T extends BiDirectionalPacket<T>> exte
                 break;
         }
         ctx.setPacketHandled(true);
+        return true;
     }
 
     protected abstract void handleClient(NetworkManager manager);

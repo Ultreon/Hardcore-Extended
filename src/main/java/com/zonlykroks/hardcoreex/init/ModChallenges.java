@@ -37,6 +37,8 @@ public class ModChallenges {
     public static final RegistryObject<FishChallenge> ONLY_FISH = CHALLENGES.register("only_fish", FishChallenge::new);
     public static final RegistryObject<TNTRainChallenge> TNT_RAIN = CHALLENGES.register("tnt_rain", TNTRainChallenge::new);
     public static final RegistryObject<TakeDamageDealtChallenge> TAKE_DAMAGE_DEALT = CHALLENGES.register("take_damage_dealt", TakeDamageDealtChallenge::new);
-    public static final RegistryObject<RandomSomethingChallenge> RANDOM_BLOCK_DROPS = CHALLENGES.register("random_block_drops", RandomSomethingChallenge::new);
+    public static final RegistryObject<RandomBlockDropsChallenge> RANDOM_BLOCK_DROPS = CHALLENGES.register("random_block_drops", RandomBlockDropsChallenge::new);
     public static final RegistryObject<RandomEntityDropsChallenge> RANDOM_ENTITY_DROPS = CHALLENGES.register("random_entity_drops", RandomEntityDropsChallenge::new);
+    public static final RegistryObject<ApocalypseChallenge> APOCALYPSE = CHALLENGES.register("apocalypse", ApocalypseChallenge::new);
+    public static final RegistryObject<LightningStormChallenge> LIGHTNING_STORM = CHALLENGES.register("lightning_storm", LightningStormChallenge::new);
 }

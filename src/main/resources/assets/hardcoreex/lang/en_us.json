@@ -1,5 +1,6 @@
 {
   "hardcoreex.failed_challenge.title": "You failed the %s challenge!",
+  "hardcoreex.failed_challenge.died": "You died in a challenge!",
   "hardcoreex.failed_challenge.delete": "Delete World",
   "item.hardcoreex.config_item": "HardcoreEx Config Item",
   "screen.challenges.title": "Available Challenges",
@@ -12,7 +13,13 @@
   "challenge.hardcoreex.no_sleep": "Insomnia",
   "challenge.hardcoreex.no_block_breaking": "No Block Breaking",
   "challenge.hardcoreex.no_attack": "Nonviolent",
-  "challenge.hardcoreex.only_fish": "Only Underwater",
+  "challenge.hardcoreex.only_fish": "Be a Fish",
+  "challenge.hardcoreex.tnt_rain": "TNT Rain",
+  "challenge.hardcoreex.take_damage_dealt": "Take Damage Dealt",
+  "challenge.hardcoreex.random_block_drops": "Random Block Drops",
+  "challenge.hardcoreex.random_entity_drops": "Random Entity Drops",
+  "challenge.hardcoreex.apocalypse": "Apocalypse",
+  "challenge.hardcoreex.lightning_storm": "Lightning Storm",
   "message.hardcoreex.world_init": "Waiting for available challenges...",
   "message.hardcoreex.insomnia.not_tired": "You aren't tired yet."
 }

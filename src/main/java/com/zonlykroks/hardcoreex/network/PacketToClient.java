@@ -12,11 +12,12 @@ public abstract class PacketToClient<T extends PacketToClient<T>> extends BasePa
     }
 
     @Override
-    public final void handle(Supplier<NetworkEvent.Context> context) {
+    public final boolean handle(Supplier<NetworkEvent.Context> context) {
         NetworkEvent.Context ctx = context.get();
         if (ctx.getDirection() == NetworkDirection.PLAY_TO_CLIENT)
             ctx.enqueueWork(() -> handle(ctx.getNetworkManager()));
         ctx.setPacketHandled(true);
+        return true;
     }
 
     protected abstract void handle(NetworkManager connection);

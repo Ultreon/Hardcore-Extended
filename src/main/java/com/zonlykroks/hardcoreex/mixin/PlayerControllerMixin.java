@@ -1,6 +1,6 @@
 package com.zonlykroks.hardcoreex.mixin;
 
-import com.zonlykroks.hardcoreex.challenge.manager.ChallengeManager;
+import com.zonlykroks.hardcoreex.client.ClientChallengeManager;
 import com.zonlykroks.hardcoreex.init.ModChallenges;
 import net.minecraft.client.multiplayer.PlayerController;
 import net.minecraft.entity.Entity;
@@ -18,21 +18,21 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public abstract class PlayerControllerMixin {
     @Inject(method = "attackEntity(Lnet/minecraft/entity/player/PlayerEntity;Lnet/minecraft/entity/Entity;)V", at = @At("HEAD"), cancellable = true)
     public void attackEntity(PlayerEntity p_78764_1_, Entity p_78764_2_, CallbackInfo ci) {
-        if (ChallengeManager.client.isEnabled(ModChallenges.NO_ATTACK) && p_78764_2_ instanceof LivingEntity) {
+        if (ClientChallengeManager.get().isEnabled(ModChallenges.NO_ATTACK) && p_78764_2_ instanceof LivingEntity) {
             ci.cancel();
         }
     }
 
     @Inject(method = "clickBlock(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/util/Direction;)Z", at = @At("HEAD"), cancellable = true)
     public void clickBlock(BlockPos loc, Direction face, CallbackInfoReturnable<Boolean> cir) {
-        if (ChallengeManager.client.isEnabled(ModChallenges.NO_BLOCK_BREAKING)) {
+        if (ClientChallengeManager.get().isEnabled(ModChallenges.NO_BLOCK_BREAKING)) {
             cir.setReturnValue(false);
         }
     }
 
     @Inject(method = "onPlayerDamageBlock(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/util/Direction;)Z", at = @At("HEAD"), cancellable = true)
     public void onPlayerDamageBlock(BlockPos posBlock, Direction directionFacing, CallbackInfoReturnable<Boolean> cir) {
-        if (ChallengeManager.client.isEnabled(ModChallenges.NO_BLOCK_BREAKING)) {
+        if (ClientChallengeManager.get().isEnabled(ModChallenges.NO_BLOCK_BREAKING)) {
             cir.setReturnValue(false);
         }
     }

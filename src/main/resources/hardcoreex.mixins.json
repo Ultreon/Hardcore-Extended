@@ -5,8 +5,11 @@
   "refmap": "hardcoreex.refmap.json",
   "mixins": [
     "AbstractBlockStateMixin",
+    "AbstractSkeletonEntityMixin",
     "MinecraftServerMixin",
-    "PlayerEntityMixin"
+    "MobEntityMixin",
+    "PlayerEntityMixin",
+    "ZombieEntityMixin"
   ],
   "minVersion": "0.8",
   "client": [

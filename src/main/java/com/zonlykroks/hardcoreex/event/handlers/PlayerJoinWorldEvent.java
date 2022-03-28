@@ -1,4 +1,4 @@
-package com.zonlykroks.hardcoreex.event;
+package com.zonlykroks.hardcoreex.event.handlers;
 
 import com.zonlykroks.hardcoreex.init.ModItems;
 import net.minecraft.entity.player.ServerPlayerEntity;

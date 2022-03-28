@@ -6,8 +6,8 @@ package com.zonlykroks.hardcoreex.challenge;
  *
  * @author zOnlyKroks, Qboi123
  */
-public abstract class RandomSomethingChallenge extends Challenge {
-    public RandomSomethingChallenge() {
+public class RandomBlockDropsChallenge extends RandomSomethingChallenge {
+    public RandomBlockDropsChallenge() {
         super();
     }
 }

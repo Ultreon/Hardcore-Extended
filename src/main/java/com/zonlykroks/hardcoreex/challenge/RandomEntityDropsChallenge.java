@@ -15,7 +15,7 @@ import java.util.Random;
  *
  * @author zOnlyKroks, Qboi123
  */
-public class RandomEntityDropsChallenge extends Challenge {
+public class RandomEntityDropsChallenge extends RandomSomethingChallenge {
     public RandomEntityDropsChallenge() {
         super();
     }

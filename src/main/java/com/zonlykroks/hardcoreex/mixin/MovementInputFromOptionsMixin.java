@@ -1,6 +1,6 @@
 package com.zonlykroks.hardcoreex.mixin;
 
-import com.zonlykroks.hardcoreex.challenge.manager.ChallengeManager;
+import com.zonlykroks.hardcoreex.client.ClientChallengeManager;
 import com.zonlykroks.hardcoreex.init.ModChallenges;
 import net.minecraft.client.GameSettings;
 import net.minecraft.util.MovementInput;
@@ -20,13 +20,13 @@ public abstract class MovementInputFromOptionsMixin extends MovementInput {
 
     @Inject(method = "tickMovement(Z)V", at = @At("HEAD"), cancellable = true)
     public void tickMovement(boolean isForced, CallbackInfo ci) {
-        if (ChallengeManager.client.isEnabled(ModChallenges.NO_WALKING)) {
+        if (ClientChallengeManager.get().isEnabled(ModChallenges.NO_WALKING)) {
             this.jump = this.gameSettings.keyBindJump.isKeyDown();
             this.sneaking = this.gameSettings.keyBindSneak.isKeyDown();
-            if (isForced) {
-                this.moveStrafe = (float) ((double) this.moveStrafe * 0.3D);
-                this.moveForward = (float) ((double) this.moveForward * 0.3D);
-            }
+//            if (isForced) {
+//                this.moveStrafe = (float) ((double) this.moveStrafe * 0.3D);
+//                this.moveForward = (float) ((double) this.moveForward * 0.3D);
+//            }
             ci.cancel();
         }
     }

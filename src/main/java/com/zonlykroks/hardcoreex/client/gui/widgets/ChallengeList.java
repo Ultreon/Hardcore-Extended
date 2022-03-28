@@ -4,8 +4,8 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.zonlykroks.hardcoreex.HardcoreExtended;
 import com.zonlykroks.hardcoreex.challenge.Challenge;
-import com.zonlykroks.hardcoreex.challenge.manager.ChallengeManager;
-import com.zonlykroks.hardcoreex.client.gui.ChallengeScreen;
+import com.zonlykroks.hardcoreex.client.ClientChallengeManager;
+import com.zonlykroks.hardcoreex.client.gui.screen.ChallengeScreen;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.AbstractGui;
@@ -37,6 +37,7 @@ public class ChallengeList extends ExtendedList<ChallengeList.ChallengeEntry> {
     private static final ITextComponent INCOMPATIBLE_CONFIRM_TITLE = new TranslationTextComponent("challenges.incompatible.confirm.title");
     private final ITextComponent title;
     private final ChallengeScreen screen;
+    private final ClientChallengeManager temp;
 
     /**
      * Constructor for the challenge list widget.
@@ -49,6 +50,7 @@ public class ChallengeList extends ExtendedList<ChallengeList.ChallengeEntry> {
     public ChallengeList(ChallengeScreen screen, Minecraft minecraft, int widthIn, int heightIn, ITextComponent title) {
         super(minecraft, widthIn, heightIn, 32, heightIn - 55 + 4, 36);
         this.screen = screen;
+        this.temp = screen.getManager();
         this.title = title;
         this.centerListVertically = false;
         this.setRenderHeader(true, (int) (9.0F * 1.5F));
@@ -156,7 +158,7 @@ public class ChallengeList extends ExtendedList<ChallengeList.ChallengeEntry> {
 //            }
 
                 // Normal arrow button state.
-                if (ChallengeManager.client.isDisabled(this.challenge)) {
+                if (list.temp.isDisabled(this.challenge)) {
                     // Check hover state.
                     if (i < 32) {
                         // Hovered.
@@ -165,7 +167,7 @@ public class ChallengeList extends ExtendedList<ChallengeList.ChallengeEntry> {
                         // Non-hovered.
                         AbstractGui.blit(matrixStack, subX, subY, 0.0F, 0.0F, 32, 32, 256, 256);
                     }
-                } else if (ChallengeManager.client.isEnabled(this.challenge)) {
+                } else if (list.temp.isEnabled(this.challenge)) {
                     // Check hover state.
                     if (i < 16) {
                         // Hovered.
@@ -190,16 +192,16 @@ public class ChallengeList extends ExtendedList<ChallengeList.ChallengeEntry> {
             double deltaX = mouseX - (double) this.list.getRowLeft();
             double deltaY = mouseY - (double) this.list.getRowTop(this.list.getEventListeners().indexOf(this));
             if (this.func_238920_a_() && deltaX <= 32.0D) {
-                if (ChallengeManager.client.isDisabled(this.challenge)) {
+                if (list.temp.isDisabled(this.challenge)) {
                     ChallengeCompatibility compatibility = this.challenge.getCompatibility();
                     if (compatibility.isCompatible()) {
-                        ChallengeManager.client.enable(this.challenge);
+                        list.temp.enable(this.challenge);
                     } else {
                         ITextComponent itextcomponent = compatibility.getConfirmMessage();
                         this.mc.displayGuiScreen(new ConfirmScreen((p_238921_1_) -> {
                             this.mc.displayGuiScreen(this.screen);
                             if (p_238921_1_) {
-                                ChallengeManager.client.enable(this.challenge);
+                                list.temp.enable(this.challenge);
                             }
 
                         }, ChallengeList.INCOMPATIBLE_CONFIRM_TITLE, itextcomponent));
@@ -210,9 +212,9 @@ public class ChallengeList extends ExtendedList<ChallengeList.ChallengeEntry> {
                     return true;
                 }
 
-                if (deltaX < 16.0D && ChallengeManager.client.isEnabled(this.challenge)
+                if (deltaX < 16.0D && list.temp.isEnabled(this.challenge)
                 ) {
-                    ChallengeManager.client.disable(this.challenge);
+                    list.temp.disable(this.challenge);
                     this.list.screen.reloadAll();
                     return true;
                 }

@@ -1,9 +1,11 @@
-package com.zonlykroks.hardcoreex.network;
+package com.zonlykroks.hardcoreex.network.packets;
 
 import com.zonlykroks.hardcoreex.challenge.Challenge;
-import com.zonlykroks.hardcoreex.challenge.manager.ChallengeManager;
-import com.zonlykroks.hardcoreex.event.PlayerJoinWorldEvent;
+import com.zonlykroks.hardcoreex.event.handlers.PlayerJoinWorldEvent;
 import com.zonlykroks.hardcoreex.init.ModChallenges;
+import com.zonlykroks.hardcoreex.network.Networking;
+import com.zonlykroks.hardcoreex.network.PacketToServer;
+import com.zonlykroks.hardcoreex.server.ServerChallengesManager;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.PacketBuffer;
@@ -26,11 +28,14 @@ public class EnableChallengePacket extends PacketToServer<EnableChallengePacket>
         if (PlayerJoinWorldEvent.isInitialized()) {
             return;
         }
+        if (ServerChallengesManager.get().isStarted()) {
+            return;
+        }
 
         Challenge challenge = ModChallenges.getRegistry().getValue(this.challenge);
         if (challenge == null) throw new IllegalStateException("Challenge not found on client.");
 
-        ChallengeManager.server.disable(challenge);
+        ServerChallengesManager.get().enable(challenge);
         Networking.sendToAllClients(new ChallengeEnabledPacket(this.challenge));
     }
 

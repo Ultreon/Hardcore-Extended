@@ -15,6 +15,7 @@ import net.minecraft.world.GameType;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
@@ -28,7 +29,7 @@ public class TNTRainChallenge extends Challenge {
     private int ticks;
     private boolean started = false;
     private boolean joined = false;
-    private final int delaySecs = 10;
+    private final int delaySecs = 15;
     private final int delay = 20 * delaySecs;
     private Vector3d startingCoords;
 
@@ -48,7 +49,7 @@ public class TNTRainChallenge extends Challenge {
     }
 
     @Override
-    protected void playerTick(PlayerEntity player) {
+    protected void playerTick(@NotNull PlayerEntity player) {
         if (!started && player instanceof ServerPlayerEntity) {
             if (joined) {
                 if (!startingCoords.equals(player.getPositionVec())) {
@@ -59,12 +60,12 @@ public class TNTRainChallenge extends Challenge {
     }
 
     @Override
-    protected void worldTick(ServerWorld world) {
+    protected void worldTick(@NotNull ServerWorld world) {
 
     }
 
     @Override
-    protected void serverTick(MinecraftServer server) {
+    protected void serverTick(@NotNull MinecraftServer server) {
         List<ServerPlayerEntity> players = server.getPlayerList().getPlayers();
         players.forEach(player -> {
             player.sendStatusMessage(new StringTextComponent(Math.round((delay - ticks) / 20f) + " seconds!"), true);

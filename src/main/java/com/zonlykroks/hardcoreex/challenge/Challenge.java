@@ -1,31 +1,30 @@
 package com.zonlykroks.hardcoreex.challenge;
 
 import com.zonlykroks.hardcoreex.HardcoreExtended;
-import com.zonlykroks.hardcoreex.challenge.manager.ChallengeManager;
-import com.zonlykroks.hardcoreex.client.gui.ChallengeFailedScreen;
+import com.zonlykroks.hardcoreex.client.ClientChallengeManager;
 import com.zonlykroks.hardcoreex.client.gui.widgets.ChallengeCompatibility;
 import com.zonlykroks.hardcoreex.common.IChallengeProvider;
-import com.zonlykroks.hardcoreex.network.ChallengeFailedPacket;
+import com.zonlykroks.hardcoreex.event.ChallengeFailedEvent;
 import com.zonlykroks.hardcoreex.network.Networking;
+import com.zonlykroks.hardcoreex.network.packets.ChallengeFailedPacket;
 import mcp.MethodsReturnNonnullByDefault;
-import net.minecraft.client.Minecraft;
-import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.world.GameType;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.DistExecutor;
-import net.minecraftforge.registries.IForgeRegistryEntry;
-import org.jetbrains.annotations.Nullable;
+import net.minecraftforge.fml.LogicalSide;
+import net.minecraftforge.registries.ForgeRegistryEntry;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Objects;
@@ -36,21 +35,20 @@ import java.util.Objects;
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
 @SuppressWarnings("unused")
-public abstract class Challenge implements IChallengeProvider, IForgeRegistryEntry<Challenge> {
+public abstract class Challenge extends ForgeRegistryEntry<Challenge> implements IChallengeProvider {
     private boolean enabled = false;
     private ForgeConfigSpec.BooleanValue configSpec;
 
-    private ResourceLocation registryName;
     private boolean started;
 
     public Challenge() {
 
-        if (ChallengeManager.client.isEnabled(this) && !this.enabled) {
-            ChallengeManager.client.enable(this);
-        }
-        if (!ChallengeManager.client.isEnabled(this) && this.enabled) {
-            ChallengeManager.client.disable(this);
-        }
+//        if (ClientChallengeManager.get().isEnabled(this) && !this.enabled) {
+//            ClientChallengeManager.get().enable(this);
+//        }
+//        if (!ClientChallengeManager.get().isEnabled(this) && this.enabled) {
+//            ClientChallengeManager.get().disable(this);
+//        }
     }
 
     @Override
@@ -101,25 +99,15 @@ public abstract class Challenge implements IChallengeProvider, IForgeRegistryEnt
     }
 
     /**
-     * Set the challenge's registry name.
-     *
-     * @param name the registry name to set to.
-     * @return the challenge object where this method called from.
-     */
-    @Override
-    public Challenge setRegistryName(ResourceLocation name) {
-        this.registryName = name;
-        return this;
-    }
-
-    /**
      * This is used for ticking the challenge.
      *
      * @param event the client tick event needed.
      */
     @SubscribeEvent
     public final void onClientTick(TickEvent.ClientTickEvent event) {
-        tick();
+        if (event.phase == TickEvent.Phase.START) {
+            tick();
+        }
     }
 
     /**
@@ -133,15 +121,17 @@ public abstract class Challenge implements IChallengeProvider, IForgeRegistryEnt
      * Player tick event handling
      */
     @SubscribeEvent
-    public final void onPlayerTick(TickEvent.PlayerTickEvent event) {
-        playerTick(event.player);
+    public final void onPlayerTick(@NotNull TickEvent.PlayerTickEvent event) {
+        if (event.phase == TickEvent.Phase.START) {
+            playerTick(event.player);
+        }
     }
 
     /**
      * Server tick event handling
      */
     @SubscribeEvent()
-    public final void onServerTick(TickEvent.ServerTickEvent event) {
+    public final void onServerTick(@NotNull TickEvent.ServerTickEvent event) {
         if (event.phase == TickEvent.Phase.START) {
             serverTick(Objects.requireNonNull(HardcoreExtended.getServer()));
         }
@@ -151,32 +141,12 @@ public abstract class Challenge implements IChallengeProvider, IForgeRegistryEnt
      * Server tick event handling
      */
     @SubscribeEvent
-    public final void onServerTick(TickEvent.WorldTickEvent event) {
+    public final void onServerTick(@NotNull TickEvent.WorldTickEvent event) {
         worldTick((ServerWorld) event.world);
     }
 
-    protected void playerTick(PlayerEntity player) {
+    protected void playerTick(@NotNull PlayerEntity player) {
 
-    }
-
-//    @SubscribeEvent
-//    protected void onPlayerMove(EntityJoinWorldEvent event) {
-//        Entity entity = event.getEntity();
-//        if (entity instanceof ServerPlayerEntity && !started) {
-//            joined = true;
-//            this.startingCoords = entity.getPositionVec();
-//        }
-//    }
-
-    @Nullable
-    @Override
-    public ResourceLocation getRegistryName() {
-        return this.registryName;
-    }
-
-    @Override
-    public Class<Challenge> getRegistryType() {
-        return Challenge.class;
     }
 
     public TranslationTextComponent getLocalizedName() {
@@ -218,11 +188,11 @@ public abstract class Challenge implements IChallengeProvider, IForgeRegistryEnt
     }
 
     private boolean isEnabled$server() {
-        return ChallengeManager.client.isEnabled(this);
+        return ClientChallengeManager.get().isEnabled(this);
     }
 
     private boolean isEnabled$client() {
-        return ChallengeManager.client.isEnabled(this);
+        return ClientChallengeManager.get().isEnabled(this);
     }
 
     /**
@@ -247,51 +217,37 @@ public abstract class Challenge implements IChallengeProvider, IForgeRegistryEnt
      * Let the player know that the challenge was failed.
      */
     public final void failChallenge(PlayerEntity player) {
-
-        DistExecutor.unsafeRunForDist(() -> () -> failChallengeClient(player), () -> () -> {
-            if (player instanceof ServerPlayerEntity) {
-                return failChallengeServer((ServerPlayerEntity) player);
-            } else {
-                HardcoreExtended.LOGGER.error("Expected " + ServerPlayerEntity.class.getName() + ", got: " + player.getClass().getName());
-                return null;
-            }
-        });
-
-    }
-
-    @Nullable
-    private <T> T failChallengeServer(ServerPlayerEntity player) {
-        Networking.sendToClient(new ChallengeFailedPacket(this.registryName), player);
-        return null;
-    }
-
-    @Nullable
-    private <T> T failChallengeClient(PlayerEntity player) {
         if (player instanceof ServerPlayerEntity) {
-            return failChallengeServer((ServerPlayerEntity) player);
+            player.setGameType(GameType.SPECTATOR);
+            Networking.sendToClient(new ChallengeFailedPacket(this), (ServerPlayerEntity) player);
+            MinecraftForge.EVENT_BUS.post(new ChallengeFailedEvent(this, player, LogicalSide.SERVER));
+        } else {
+            Networking.sendToServer(new ChallengeFailedPacket(this));
         }
-        Networking.sendToServer(new ChallengeFailedPacket(this.registryName));
-        Minecraft.getInstance().displayGuiScreen(new ChallengeFailedScreen(this));
-        return null;
     }
 
     @SubscribeEvent
-    public final void onDeath(LivingDeathEvent event) {
+    public final void onDeath(@NotNull LivingDeathEvent event) {
         // Cancel event, we don't want the player to die.
         event.setCanceled(true);
 
+        LivingEntity livingEntity = event.getEntityLiving();
+
         // Check for server side player entity.
-        if (event.getEntityLiving() instanceof ServerPlayerEntity) {
+        if (livingEntity instanceof ServerPlayerEntity) {
             // Fail challenge.
-            this.failChallenge((PlayerEntity) event.getEntityLiving());
+            ServerPlayerEntity player = (ServerPlayerEntity) livingEntity;
+            ((ServerPlayerEntity) livingEntity).setGameType(GameType.SPECTATOR);
+            Networking.sendToClient(new ChallengeFailedPacket((Challenge) null), player);
+            MinecraftForge.EVENT_BUS.post(new ChallengeFailedEvent(this, player, LogicalSide.SERVER));
         }
     }
 
-    protected void worldTick(ServerWorld world) {
+    protected void worldTick(@NotNull ServerWorld world) {
 
     }
 
-    protected void serverTick(MinecraftServer server) {
+    protected void serverTick(@NotNull MinecraftServer server) {
 
     }
 }

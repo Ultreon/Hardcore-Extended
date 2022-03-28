@@ -1,11 +1,13 @@
 package com.zonlykroks.hardcoreex;
 
+import com.zonlykroks.hardcoreex.client.ClientChallengeManager;
 import com.zonlykroks.hardcoreex.config.Config;
-import com.zonlykroks.hardcoreex.event.PlayerJoinWorldEvent;
+import com.zonlykroks.hardcoreex.event.handlers.PlayerJoinWorldEvent;
 import com.zonlykroks.hardcoreex.init.ModChallenges;
 import com.zonlykroks.hardcoreex.init.ModItems;
 import com.zonlykroks.hardcoreex.network.Networking;
 import com.zonlykroks.hardcoreex.render.LayerModel;
+import com.zonlykroks.hardcoreex.server.ServerChallengesManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
@@ -63,6 +65,9 @@ public class HardcoreExtended {
 
 
         MinecraftForge.EVENT_BUS.register(this);
+
+        ClientChallengeManager.initEvents(modEventBus);
+        ServerChallengesManager.initEvents(modEventBus);
     }
 
     public static ResourceLocation rl(String path) {

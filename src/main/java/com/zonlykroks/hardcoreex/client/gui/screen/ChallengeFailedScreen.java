@@ -1,4 +1,4 @@
-package com.zonlykroks.hardcoreex.client.gui;
+package com.zonlykroks.hardcoreex.client.gui.screen;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -22,6 +22,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.common.Mod;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.util.Objects;
@@ -45,10 +46,10 @@ public class ChallengeFailedScreen extends Screen {
     /**
      * Delete world constructor.
      *
-     * @param challenge the failed challenge.
+     * @param challenge the failed challenge, leave null if the user died.
      */
-    public ChallengeFailedScreen(Challenge challenge) {
-        super(new TranslationTextComponent("hardcoreex.failed_challenge.title", challenge.getLocalizedName()));
+    public ChallengeFailedScreen(@Nullable Challenge challenge) {
+        super(challenge == null ? new TranslationTextComponent("hardcoreex.failed_challenge.died", challenge.getLocalizedName()) : new TranslationTextComponent("hardcoreex.failed_challenge.title", challenge.getLocalizedName()));
 
         // Assign variables.
         this.challenge = challenge;
@@ -75,16 +76,11 @@ public class ChallengeFailedScreen extends Screen {
         // Clear widgets from older screen. So there will no copies of older instances.
         this.buttons.clear();
         this.children.clear();
-        // Respawn player.
-        checkForSingleplayer();
 
         IntegratedServer server = this.minecraft.getIntegratedServer();
 
         // Add button for respawn.
         this.addButton(new Button(this.width / 2 - 100, this.height / 4 + 72, 200, 20, new TranslationTextComponent("deathScreen.spectate"), (p_213021_1_) -> {
-            // Respawn player.
-            checkForSingleplayer();
-
             if (server == null) throw new NullPointerException("Expected integrated server to be there.");
 
             // Respawn player.
@@ -107,7 +103,7 @@ public class ChallengeFailedScreen extends Screen {
         this.scoreText = (new TranslationTextComponent("deathScreen.score")).appendString(": ").appendSibling((new StringTextComponent(Integer.toString(Objects.requireNonNull(this.minecraft.player).getScore()))).mergeStyle(TextFormatting.YELLOW));
     }
 
-    public void checkForSingleplayer() {
+    public void checkValidSingleplayer() {
         Minecraft mc = Minecraft.getInstance();
 
         if (!mc.isIntegratedServerRunning()) {
@@ -200,6 +196,14 @@ public class ChallengeFailedScreen extends Screen {
      * @return false.
      */
     public boolean isPauseScreen() {
-        return false;
+        return true;
+    }
+
+    /**
+     * Empty override to stop closing it.
+     */
+    @Override
+    public void closeScreen() {
+        // Stop this pls.
     }
 }

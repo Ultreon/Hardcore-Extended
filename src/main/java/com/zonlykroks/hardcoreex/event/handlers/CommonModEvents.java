@@ -1,4 +1,4 @@
-package com.zonlykroks.hardcoreex.event;
+package com.zonlykroks.hardcoreex.event.handlers;
 
 import com.zonlykroks.hardcoreex.HardcoreExtended;
 import net.minecraftforge.api.distmarker.Dist;

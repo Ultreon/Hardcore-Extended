@@ -1,26 +1,50 @@
 package com.zonlykroks.hardcoreex.challenge.manager;
 
 import com.zonlykroks.hardcoreex.HardcoreExtended;
+import com.zonlykroks.hardcoreex.SideExecutor;
 import com.zonlykroks.hardcoreex.challenge.Challenge;
+import com.zonlykroks.hardcoreex.client.ClientChallengeManager;
 import com.zonlykroks.hardcoreex.init.ModChallenges;
-import com.zonlykroks.hardcoreex.network.*;
-import net.minecraft.nbt.INBT;
-import net.minecraft.nbt.ListNBT;
-import net.minecraft.nbt.StringNBT;
-import net.minecraft.util.ResourceLocation;
+import com.zonlykroks.hardcoreex.network.packets.ChallengeDisabledPacket;
+import com.zonlykroks.hardcoreex.network.packets.ChallengeEnabledPacket;
+import com.zonlykroks.hardcoreex.server.ServerChallengesManager;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.world.World;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.fml.LogicalSide;
 
 import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Supplier;
 
-public class ChallengeManager {
-    private static final Set<Challenge> challengesEnabled = new HashSet<>();
+public abstract class ChallengeManager {
+    protected final Set<Challenge> enabled = new HashSet<>();
 
-    public static final ChallengeManager server = new ChallengeManager();
-    public static final ChallengeManager client = new ChallengeManager();
+    @Deprecated
+    public static final ChallengeManager server = null;
+    @Deprecated
+    public static final ChallengeManager client = null;
 
-    private ChallengeManager() {
+    protected ChallengeManager() {
 
+    }
+
+    public static ChallengeManager getForEntity(Entity entity) {
+        if (entity instanceof PlayerEntity) {
+            return SideExecutor.unsafeGetForSide((PlayerEntity) entity, () -> ClientChallengeManager::get, () -> ServerChallengesManager::get);
+        } else {
+            return SideExecutor.unsafeGetForSide(entity, () -> ClientChallengeManager::get, () -> ServerChallengesManager::get);
+        }
+    }
+
+    public static ChallengeManager getForWorld(World world) {
+        return SideExecutor.unsafeGetForSide(world, () -> ClientChallengeManager::get, () -> ServerChallengesManager::get);
+    }
+
+    public static ChallengeManager getForSide(LogicalSide side) {
+        return SideExecutor.unsafeGetForSide(side, () -> ClientChallengeManager::get, () -> ServerChallengesManager::get);
     }
 
     public void enable(Challenge challenge) {
@@ -31,65 +55,26 @@ public class ChallengeManager {
         set(challenge, false);
     }
 
-    public void set(Challenge challenge, boolean value) {
-        if (value && !challengesEnabled.contains(challenge)) {
-            challengesEnabled.add(challenge);
-            challenge.onEnable();
-            if (this == client) {
-                Networking.sendToServer(new EnableChallengePacket(challenge.getRegistryName()));
-            }
-        } else if (!value && challengesEnabled.contains(challenge)) {
-            challengesEnabled.remove(challenge);
-            challenge.onDisable();
-            if (this == client) {
-                Networking.sendToServer(new DisableChallengePacket(challenge.getRegistryName()));
-            }
-        }
-    }
+    public abstract void set(Challenge challenge, boolean value);
 
     public void readPacket(ChallengeEnabledPacket packet) {
-        Challenge challenge = ModChallenges.getRegistry().getValue(packet.getChallenge());
-        if (!challengesEnabled.contains(challenge) && challenge != null) {
-            challengesEnabled.add(challenge);
+        Challenge challenge = ModChallenges.getRegistry().getValue(packet.getRegistryName());
+        if (!enabled.contains(challenge) && challenge != null) {
+            enabled.add(challenge);
             challenge.onEnable();
         }
     }
 
     public void readPacket(ChallengeDisabledPacket packet) {
-        Challenge challenge = ModChallenges.getRegistry().getValue(packet.getChallenge());
-        if (challengesEnabled.contains(challenge) && challenge != null) {
-            challengesEnabled.add(challenge);
+        Challenge challenge = ModChallenges.getRegistry().getValue(packet.getRegistryName());
+        if (enabled.contains(challenge) && challenge != null) {
+            enabled.add(challenge);
             challenge.onDisable();
         }
     }
 
     public boolean isEnabled(Challenge challenge) {
-        return challengesEnabled.contains(challenge);
-    }
-
-    public ListNBT write(ListNBT nbt) {
-        for (Challenge challenge : challengesEnabled) {
-            if (challenge.getRegistryName() != null) {
-                nbt.add(StringNBT.valueOf(challenge.getRegistryName().toString()));
-            }
-        }
-        return nbt;
-    }
-
-    public void read(ListNBT nbt) {
-        for (INBT element : nbt) {
-            if (element instanceof StringNBT) {
-                String string = element.getString();
-                ResourceLocation rl = new ResourceLocation(string);
-                Challenge value = ModChallenges.getRegistry().getValue(rl);
-                if (value != null) {
-                    challengesEnabled.add(value);
-                    value.onEnable();
-                } else {
-                    HardcoreExtended.LOGGER.warn("Challenge was not found: " + string);
-                }
-            }
-        }
+        return enabled.contains(challenge);
     }
 
     public boolean isEnabled(Supplier<? extends Challenge> supplier) {
@@ -100,7 +85,18 @@ public class ChallengeManager {
         return !isEnabled(challenge);
     }
 
-    public boolean isDisabled(Supplier<? extends Challenge> noAttack) {
-        return !isEnabled(noAttack);
+    public boolean isDisabled(Supplier<? extends Challenge> challenge) {
+        return !isEnabled(challenge);
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    private void clear() {
+        enabled.clear();
+        HardcoreExtended.LOGGER.info("Cleared client challenges.");
+    }
+
+    @Deprecated
+    public void invalidateClient() {
+        client.clear();
     }
 }

@@ -1,7 +1,5 @@
 package com.zonlykroks.hardcoreex.items;
 
-import com.zonlykroks.hardcoreex.client.gui.ChallengeScreen;
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -17,14 +15,6 @@ public class ConfigItem extends Item {
 
     @Override
     public @NotNull ActionResult<ItemStack> onItemRightClick(World worldIn, @NotNull PlayerEntity playerIn, @NotNull Hand handIn) {
-        // Check if on Client.
-        if (worldIn.isRemote) {
-            // Get Minecraft instance.
-            Minecraft mc = Minecraft.getInstance();
-
-            mc.displayGuiScreen(new ChallengeScreen(mc.currentScreen));
-        }
-
-        return super.onItemRightClick(worldIn, playerIn, handIn);
+        return ActionResult.resultFail(playerIn.getHeldItem(handIn));
     }
 }

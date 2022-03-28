@@ -1,12 +1,13 @@
-package com.zonlykroks.hardcoreex.client.gui;
+package com.zonlykroks.hardcoreex.client.gui.screen;
 
 import com.google.common.collect.Maps;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.zonlykroks.hardcoreex.challenge.Challenge;
-import com.zonlykroks.hardcoreex.challenge.manager.ChallengeManager;
+import com.zonlykroks.hardcoreex.client.ClientChallengeManager;
 import com.zonlykroks.hardcoreex.client.gui.widgets.ChallengeList;
 import com.zonlykroks.hardcoreex.network.Networking;
-import com.zonlykroks.hardcoreex.network.SetupDonePacket;
+import com.zonlykroks.hardcoreex.network.packets.EnableChallengePacket;
+import com.zonlykroks.hardcoreex.network.packets.StartChallengesPacket;
 import net.minecraft.client.gui.DialogTexts;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.button.Button;
@@ -31,6 +32,7 @@ import java.util.stream.Collectors;
 public class ChallengeScreen extends Screen {
     private static final ITextComponent field_238884_b_ = (new TranslationTextComponent("pack.dropInfo")).mergeStyle(TextFormatting.GRAY);
     private final Screen backScreen;
+    private final ClientChallengeManager temp;
     private long field_243393_t;
     private ChallengeList leftScreen;
     private ChallengeList rightScreen;
@@ -43,6 +45,7 @@ public class ChallengeScreen extends Screen {
         super(new TranslationTextComponent("screen.challenges.title"));
         this.backScreen = destScreenOnDone;
 //      this.field_241817_w_ = packDirectory;
+        this.temp = ClientChallengeManager.temp();
     }
 
     public void closeScreen() {
@@ -89,8 +92,8 @@ public class ChallengeScreen extends Screen {
         this.challenges = new ArrayList<>(GameRegistry.findRegistry(Challenge.class).getValues());
 
         // Enabled / disabled.
-        this.enabled = challenges.stream().filter(ChallengeManager.client::isEnabled).collect(Collectors.toList());
-        this.disabled = challenges.stream().filter(ChallengeManager.client::isDisabled).collect(Collectors.toList());
+        this.enabled = challenges.stream().filter(temp::isEnabled).collect(Collectors.toList());
+        this.disabled = challenges.stream().filter(temp::isDisabled).collect(Collectors.toList());
 
         // Reload challenges.
         this.reloadChallenges(this.rightScreen, this.enabled);
@@ -109,8 +112,6 @@ public class ChallengeScreen extends Screen {
 
     public void reloadAll() {
         this.reload();
-//      this.field_243393_t = 0L;
-//      this.field_243394_y.clear();
     }
 
     public void render(@NotNull MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
@@ -141,8 +142,15 @@ public class ChallengeScreen extends Screen {
     }
 
     private void done(Button p_238903_1_) {
-        Networking.sendToServer(new SetupDonePacket());
+        for (Challenge challenge : enabled) {
+            Networking.sendToServer(new EnableChallengePacket(challenge.getRegistryName()));
+        }
+        Networking.sendToServer(new StartChallengesPacket());
         this.closeScreen();
+    }
+
+    public ClientChallengeManager getManager() {
+        return temp;
     }
 
     // Todo: allow loading of custom challenges.
