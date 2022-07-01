@@ -8,6 +8,12 @@ import net.minecraftforge.fml.loading.FMLEnvironment;
 
 import java.util.function.Supplier;
 
+/**
+ * Class for executing code for logical client and server sides.
+ *
+ * @author Qboi123
+ * @since 0.1
+ */
 public class SideExecutor {
     public static <T> T unsafeRunForSide(Supplier<Runnable> clientTarget, Supplier<Runnable> serverTarget) {
         switch (FMLEnvironment.dist) {

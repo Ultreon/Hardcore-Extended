@@ -27,25 +27,25 @@ public class ApocalypseChallenge extends Challenge {
 
     @SubscribeEvent
     public void onEntitySpawn(LivingSpawnEvent event) {
-        LivingEntity entityLiving = event.getEntityLiving();
-        if (!(entityLiving instanceof PlayerEntity)) {
-            BlockPos position = event.getEntityLiving().getPosition();
-            double x = position.getX();
-            double y = position.getY();
-            double z = position.getZ();
+        LivingEntity living = event.getEntityLiving();
+        if (!(living instanceof PlayerEntity)) {
+            BlockPos pos = event.getEntityLiving().getPosition();
+            double x = pos.getX();
+            double y = pos.getY();
+            double z = pos.getZ();
             IWorld world = event.getWorld();
             if (world instanceof ServerWorld) {
                 @Nullable LivingEntity entity = null;
-                if (!(entityLiving instanceof EndermanEntity) && !(entityLiving instanceof AbstractPiglinEntity) && !(entityLiving instanceof ZombieEntity) && !(entityLiving instanceof AbstractSkeletonEntity) && !(entityLiving instanceof WaterMobEntity) && !(entityLiving instanceof EnderDragonEntity) && !(entityLiving instanceof WitherEntity)) {
-                    if (entityLiving instanceof PigEntity) {
-                        entityLiving.remove(false);
+                if (!(living instanceof EndermanEntity) && !(living instanceof AbstractPiglinEntity) && !(living instanceof ZombieEntity) && !(living instanceof AbstractSkeletonEntity) && !(living instanceof WaterMobEntity) && !(living instanceof EnderDragonEntity) && !(living instanceof WitherEntity)) {
+                    if (living instanceof PigEntity) {
+                        living.remove(false);
                         entity = EntityType.ZOGLIN.create((ServerWorld) world, null, null, null, new BlockPos((int) x, (int) y, (int) z), SpawnReason.NATURAL, true, false);
-                    } else if (entityLiving.isInWater()) {
+                    } else if (living.isInWater()) {
                         entity = EntityType.DROWNED.create((ServerWorld) world, null, null, null, new BlockPos((int) x, (int) y, (int) z), SpawnReason.NATURAL, true, false);
-                    } else if (entityLiving.isInLava()) {
+                    } else if (living.isInLava()) {
                         entity = EntityType.ZOGLIN.create((ServerWorld) world, null, null, null, new BlockPos((int) x, (int) y, (int) z), SpawnReason.NATURAL, true, false);
-                    } else if ((entityLiving.isOnGround())) {
-                        Biome.Category category = world.getBiome(entityLiving.getPosition()).getCategory();
+                    } else if ((living.isOnGround())) {
+                        Biome.Category category = world.getBiome(living.getPosition()).getCategory();
                         switch (category) {
                             case DESERT:
                             case MESA:
@@ -72,7 +72,7 @@ public class ApocalypseChallenge extends Challenge {
                 }
 
                 if (entity != null) {
-                    entityLiving.remove(false);
+                    living.remove(false);
                     world.addEntity(entity);
                 }
             }

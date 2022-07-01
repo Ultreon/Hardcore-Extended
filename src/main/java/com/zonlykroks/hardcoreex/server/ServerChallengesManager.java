@@ -27,6 +27,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Objects;
 
+/**
+ * Server side challenge manager.
+ *
+ * @author Qboi123
+ * @since 1.0
+ */
 public class ServerChallengesManager extends ChallengeManager {
     @Nullable
     private static ServerChallengesManager instance;
@@ -35,6 +41,11 @@ public class ServerChallengesManager extends ChallengeManager {
     private static boolean initialized;
     private boolean started = false;
 
+    /**
+     * Initializes events for the challenge manager.
+     *
+     * @param eventBus The event bus to register events to.
+     */
     public static void initEvents(IEventBus eventBus) {
         synchronized (initLock) {
             if (!initialized) {
@@ -98,10 +109,21 @@ public class ServerChallengesManager extends ChallengeManager {
         this.server = server;
     }
 
+    /**
+     * Gets the server challenge manager.
+     *
+     * @return The server challenge manager.
+     */
     public static ServerChallengesManager get() {
         return instance;
     }
 
+    /**
+     * Enable or disable a challenge.
+     *
+     * @param challenge The challenge to enable or disable.
+     * @param value True to enable, false to disable.
+     */
     @Override
     public void set(Challenge challenge, boolean value) {
         if (started) {

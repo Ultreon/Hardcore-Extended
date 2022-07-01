@@ -9,8 +9,6 @@ import com.zonlykroks.hardcoreex.network.Networking;
 import com.zonlykroks.hardcoreex.render.LayerModel;
 import com.zonlykroks.hardcoreex.server.ServerChallengesManager;
 import net.minecraft.client.Minecraft;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
@@ -32,74 +30,128 @@ import org.jetbrains.annotations.Nullable;
  *
  * @author zOnlyKroks, Qboi123
  * @since 0.1
+ * @see Mod
  */
 @Mod("hardcoreex")
 @Mod.EventBusSubscriber(modid = HardcoreExtended.MOD_ID)
 public class HardcoreExtended {
+    /**
+     * The mod's ID.
+     * It's basically just {@code hardcoreex}.
+     * @since 0.1
+     */
     public static final String MOD_ID = "hardcoreex";
+
+    /**
+     * The mod's logger.
+     * @since 0.1
+     */
     public static final Logger LOGGER = LogManager.getLogger();
     private static MinecraftServer server;
 
     /**
      * HardcoreExtended constructor.
+     *
+     * @author zOnlyKroks, Qboi123
+     * @since 0.1
      */
     public HardcoreExtended() {
-
+        // Add listeners to the mod event bus
         final IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
-
-
         modEventBus.addListener(this::setup);
         modEventBus.addListener(this::doClientStuff);
 
-
+        // Sync and initialize the mod's configuration
         Config.sync();
         Config.init();
 
+        // Register the mod's network handler
         Networking.initialize();
 
         MinecraftForge.EVENT_BUS.register(PlayerJoinWorldEvent.class);
 
-
+        // Register the object initializers to the mod's event bus
         ModItems.ITEMS.register(modEventBus);
         ModChallenges.CHALLENGES.register(modEventBus);
 
-
         MinecraftForge.EVENT_BUS.register(this);
 
+        // Register the mod's server and client handlers
         ClientChallengeManager.initEvents(modEventBus);
         ServerChallengesManager.initEvents(modEventBus);
     }
 
+    /**
+     * Get a resource location from the mod's ID and the given path.
+     *
+     * @param path The path to the resource.
+     * @return The resource location.
+     * @since 1.0
+     * @author Qboi123
+     * @see #MOD_ID
+     */
     public static ResourceLocation rl(String path) {
         return new ResourceLocation(MOD_ID, path);
     }
 
+    /**
+     * Get Minecraft's server instance.
+     * This will be null if there's no running server.
+     *
+     * @return The server instance.
+     * @since 1.0
+     * @author Qboi123
+     */
     @Nullable
     public static MinecraftServer getServer() {
         return server;
     }
 
     /**
-     * Common setup event.
+     * Handles client and server setup.
      *
-     * @param event ...
+     * @param event The event for setting up on the client or server.
+     * @since 1.0
+     * @author Qboi123
      */
     public void setup(final FMLCommonSetupEvent event) {
 
     }
 
+    /**
+     * Handles client setup.
+     *
+     * @param event The event for setting up on the client.
+     * @since 1.0
+     * @author Qboi123
+     */
     @SubscribeEvent
     public void doClientStuff(FMLClientSetupEvent event) {
-        Minecraft.getInstance().getRenderManager().getSkinMap().forEach((s, playerRenderer) -> {
-            playerRenderer.addLayer(new LayerModel(playerRenderer));
-        });
+        // Register the layer renderer
+        Minecraft.getInstance().getRenderManager().getSkinMap().forEach((s, playerRenderer) ->
+                playerRenderer.addLayer(new LayerModel(playerRenderer)));
     }
 
+    /**
+     * Handles the starting of the server.
+     *
+     * @param event The event for starting the server.
+     * @since 1.0
+     * @author Qboi123
+     */
     @SubscribeEvent
     public static void onServerStarting(FMLServerStartingEvent event) {
         server = event.getServer();
     }
 
+
+    /**
+     * Handles the stopping of the server.
+     *
+     * @param event The event for stopping the server.
+     * @since 1.0
+     * @author Qboi123
+     */
     @SubscribeEvent
     public static void onServerStoppedEvent(FMLServerStoppedEvent event) {
         server = null;
@@ -108,14 +160,9 @@ public class HardcoreExtended {
 
     /**
      * Main item group for the Hardcore Extended Mod.
-     * <p>
-     * Todo: need this to be a standalone class.
+     *
+     * @since 1.0
      */
-    public static final ItemGroup TAB = new ItemGroup("HardcoreExtendedItemGroup ") {
-        @Override
-        public ItemStack createIcon() {
-            return new ItemStack(ModItems.CONFIG_ITEM.get());
-        }
-    };
+    public static final HardcoreExTab TAB = new HardcoreExTab();
 
 }
