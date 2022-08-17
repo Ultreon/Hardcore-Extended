@@ -1,21 +1,26 @@
 package com.zonlykroks.hardcoreex.client.gui.widgets;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.Tesselator;
 import com.zonlykroks.hardcoreex.HardcoreExtended;
 import com.zonlykroks.hardcoreex.challenge.Challenge;
 import com.zonlykroks.hardcoreex.client.ClientChallengeManager;
 import com.zonlykroks.hardcoreex.client.gui.screen.ChallengeScreen;
 import mcp.MethodsReturnNonnullByDefault;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.AbstractGui;
-import net.minecraft.client.gui.screen.ConfirmScreen;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.widget.list.ExtendedList;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.util.IReorderingProcessor;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.*;
+import net.minecraft.client.gui.GuiComponent;
+import net.minecraft.client.gui.components.ObjectSelectionList;
+import net.minecraft.client.gui.screens.ConfirmScreen;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.locale.Language;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.FormattedText;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.FormattedCharSequence;
+import net.minecraft.util.text.TextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -30,12 +35,12 @@ import javax.annotation.ParametersAreNonnullByDefault;
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
 @OnlyIn(Dist.CLIENT)
-public class ChallengeList extends ExtendedList<ChallengeList.ChallengeEntry> {
+public class ChallengeList extends ObjectSelectionList<ChallengeList.ChallengeEntry> {
     private static final ResourceLocation ICONS = new ResourceLocation("textures/gui/resource_packs.png");
     private static final ResourceLocation BACKGROUND_LOCATION = new ResourceLocation(HardcoreExtended.MOD_ID, "textures/empty.png");
-    private static final ITextComponent INCOMPATIBLE_TEXT = new TranslationTextComponent("challenges.incompatible");
-    private static final ITextComponent INCOMPATIBLE_CONFIRM_TITLE = new TranslationTextComponent("challenges.incompatible.confirm.title");
-    private final ITextComponent title;
+    private static final Component INCOMPATIBLE_TEXT = new TranslatableComponent("challenges.incompatible");
+    private static final Component INCOMPATIBLE_CONFIRM_TITLE = new TranslatableComponent("challenges.incompatible.confirm.title");
+    private final Component title;
     private final ChallengeScreen screen;
     private final ClientChallengeManager temp;
 
@@ -47,7 +52,7 @@ public class ChallengeList extends ExtendedList<ChallengeList.ChallengeEntry> {
      * @param heightIn  the list's height.
      * @param title     the list title.
      */
-    public ChallengeList(ChallengeScreen screen, Minecraft minecraft, int widthIn, int heightIn, ITextComponent title) {
+    public ChallengeList(ChallengeScreen screen, Minecraft minecraft, int widthIn, int heightIn, Component title) {
         super(minecraft, widthIn, heightIn, 32, heightIn - 55 + 4, 36);
         this.screen = screen;
         this.temp = screen.getManager();
@@ -56,9 +61,9 @@ public class ChallengeList extends ExtendedList<ChallengeList.ChallengeEntry> {
         this.setRenderHeader(true, (int) (9.0F * 1.5F));
     }
 
-    protected void renderHeader(MatrixStack p_230448_1_, int p_230448_2_, int p_230448_3_, Tessellator p_230448_4_) {
-        ITextComponent itextcomponent = (new StringTextComponent("")).appendSibling(this.title).mergeStyle(TextFormatting.UNDERLINE, TextFormatting.BOLD);
-        this.minecraft.fontRenderer.drawText(p_230448_1_, itextcomponent, (float) (p_230448_2_ + this.width / 2 - this.minecraft.fontRenderer.getStringPropertyWidth(itextcomponent) / 2), (float) Math.min(this.y0 + 3, p_230448_3_), 16777215);
+    protected void renderHeader(PoseStack p_230448_1_, int p_230448_2_, int p_230448_3_, Tesselator p_230448_4_) {
+        Component itextcomponent = (new TextComponent("")).append(this.title).withStyle(ChatFormatting.UNDERLINE, ChatFormatting.BOLD);
+        this.minecraft.font.draw(p_230448_1_, itextcomponent, (float) (p_230448_2_ + this.width / 2 - this.minecraft.font.width(itextcomponent) / 2), (float) Math.min(this.y0 + 3, p_230448_3_), 16777215);
     }
 
     public int getRowWidth() {
@@ -71,12 +76,12 @@ public class ChallengeList extends ExtendedList<ChallengeList.ChallengeEntry> {
 
     @SuppressWarnings("deprecation")
     @OnlyIn(Dist.CLIENT)
-    public static class ChallengeEntry extends ExtendedList.AbstractListEntry<ChallengeEntry> {
+    public static class ChallengeEntry extends ObjectSelectionList.Entry<ChallengeEntry> {
         private final ChallengeList list;
         protected final Minecraft mc;
         protected final Screen screen;
         private final Challenge challenge;
-        private final IReorderingProcessor reorderingLocalizedName;
+        private final FormattedCharSequence reorderingLocalizedName;
         // Todo: allow creation of custom challenges.
 //      private final IReorderingProcessor reorderingIncompatible;
 
@@ -96,7 +101,7 @@ public class ChallengeList extends ExtendedList<ChallengeList.ChallengeEntry> {
             this.reorderingLocalizedName = getReordering(minecraft, challenge.getLocalizedName());
 
             // Todo: allow creation of custom challenges.
-//         this.reorderingIncompatible = func_244424_a(p_i241201_1_, ChallengeList.INCOMPATIBLE_TEXT);
+//         this.reorderingIncompatible = cacheName(p_i241201_1_, ChallengeList.INCOMPATIBLE_TEXT);
         }
 
         /**
@@ -106,13 +111,13 @@ public class ChallengeList extends ExtendedList<ChallengeList.ChallengeEntry> {
          * @param text      the text component to process.
          * @return a {@link IReorderingProcessor reordering processor}.
          */
-        private static IReorderingProcessor getReordering(Minecraft minecraft, ITextComponent text) {
-            int i = minecraft.fontRenderer.getStringPropertyWidth(text);
+        private static FormattedCharSequence getReordering(Minecraft minecraft, Component text) {
+            int i = minecraft.font.width(text);
             if (i > 157) {
-                ITextProperties itextproperties = ITextProperties.func_240655_a_(minecraft.fontRenderer.func_238417_a_(text, 157 - minecraft.fontRenderer.getStringWidth("...")), ITextProperties.func_240652_a_("..."));
-                return LanguageMap.getInstance().func_241870_a(itextproperties);
+                FormattedText itextproperties = FormattedText.composite(minecraft.font.substrByWidth(text, 157 - minecraft.font.width("...")), FormattedText.of("..."));
+                return Language.getInstance().getVisualOrder(itextproperties);
             } else {
-                return text.func_241878_f();
+                return text.getVisualOrderText();
             }
         }
 
@@ -131,30 +136,30 @@ public class ChallengeList extends ExtendedList<ChallengeList.ChallengeEntry> {
          * @param partialTicks the {@link Minecraft#getRenderPartialTicks() render partial ticks}.
          */
         @SuppressWarnings({"CommentedOutCode", "SpellCheckingInspection"})
-        public void render(MatrixStack matrixStack, int unknown1, int subY, int subX, int unknown2, int unknown3, int mouseX, int mouseY, boolean p_230432_9_, float partialTicks) {
+        public void render(PoseStack matrixStack, int unknown1, int subY, int subX, int unknown2, int unknown3, int mouseX, int mouseY, boolean p_230432_9_, float partialTicks) {
             // Todo: allow creation of custom challenges.
-//         ChallengeCompatibility challengeCompatibility = this.field_214431_d.func_230460_a_();
+//         ChallengeCompatibility challengeCompatibility = this.pack.getCompatibility();
 //         if (!challengeCompatibility.isCompatible()) {
 //            RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 //            AbstractGui.fill(p_230432_1_, p_230432_4_ - 1, p_230432_3_ - 1, p_230432_4_ + p_230432_5_ - 9, p_230432_3_ + p_230432_6_ + 1, -8978432);
 //         }
 
-            this.mc.getTextureManager().bindTexture(this.challenge.getTextureLocation());
+            this.mc.getTextureManager().bind(this.challenge.getTextureLocation());
             RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-            AbstractGui.blit(matrixStack, subX, subY, 0.0F, 0.0F, 32, 32, 32, 32);
-            IReorderingProcessor reorderingLocalizedName = this.reorderingLocalizedName;
-//         IBidiRenderer ibidirenderer = this.field_243408_f;
-            if (this.func_238920_a_() && (this.mc.gameSettings.touchscreen || p_230432_9_)) {
-                this.mc.getTextureManager().bindTexture(ChallengeList.ICONS);
-                AbstractGui.fill(matrixStack, subX, subY, subX + 32, subY + 32, -1601138544);
+            GuiComponent.blit(matrixStack, subX, subY, 0.0F, 0.0F, 32, 32, 32, 32);
+            FormattedCharSequence reorderingLocalizedName = this.reorderingLocalizedName;
+//         IBidiRenderer ibidirenderer = this.descriptionDisplayCache;
+            if (this.showHoverOverlay() && (this.mc.options.touchscreen || p_230432_9_)) {
+                this.mc.getTextureManager().bind(ChallengeList.ICONS);
+                GuiComponent.fill(matrixStack, subX, subY, subX + 32, subY + 32, -1601138544);
                 RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
                 int i = mouseX - subX;
                 int j = mouseY - subY;
 
                 // Todo: allow creation of custom challenges.
-//            if (!this.field_214431_d.func_230460_a_().isCompatible()) {
-//               ireorderingprocessor = this.field_244422_g;
-//               ibidirenderer = this.field_244423_h;
+//            if (!this.pack.getCompatibility().isCompatible()) {
+//               ireorderingprocessor = this.incompatibleNameDisplayCache;
+//               ibidirenderer = this.incompatibleDescriptionDisplayCache;
 //            }
 
                 // Normal arrow button state.
@@ -162,44 +167,44 @@ public class ChallengeList extends ExtendedList<ChallengeList.ChallengeEntry> {
                     // Check hover state.
                     if (i < 32) {
                         // Hovered.
-                        AbstractGui.blit(matrixStack, subX, subY, 0.0F, 32.0F, 32, 32, 256, 256);
+                        GuiComponent.blit(matrixStack, subX, subY, 0.0F, 32.0F, 32, 32, 256, 256);
                     } else {
                         // Non-hovered.
-                        AbstractGui.blit(matrixStack, subX, subY, 0.0F, 0.0F, 32, 32, 256, 256);
+                        GuiComponent.blit(matrixStack, subX, subY, 0.0F, 0.0F, 32, 32, 256, 256);
                     }
                 } else if (list.temp.isEnabled(this.challenge)) {
                     // Check hover state.
                     if (i < 16) {
                         // Hovered.
-                        AbstractGui.blit(matrixStack, subX, subY, 32.0F, 32.0F, 32, 32, 256, 256);
+                        GuiComponent.blit(matrixStack, subX, subY, 32.0F, 32.0F, 32, 32, 256, 256);
                     } else {
                         // Non-hovered.
-                        AbstractGui.blit(matrixStack, subX, subY, 32.0F, 0.0F, 32, 32, 256, 256);
+                        GuiComponent.blit(matrixStack, subX, subY, 32.0F, 0.0F, 32, 32, 256, 256);
                     }
                 }
             }
 
-            this.mc.fontRenderer.drawTextWithShadow(matrixStack, reorderingLocalizedName, (float) (subX + 32 + 2), (float) (subY + 1), 16777215);
-//         ibidirenderer.func_241865_b(matrixStack, subX + 32 + 2, subY + 12, 10, 8421504);
+            this.mc.font.drawShadow(matrixStack, reorderingLocalizedName, (float) (subX + 32 + 2), (float) (subY + 1), 16777215);
+//         ibidirenderer.renderLeftAligned(matrixStack, subX + 32 + 2, subY + 12, 10, 8421504);
         }
 
-        private boolean func_238920_a_() {
-//         return !this.challenge.func_230465_f_() || !this.challenge.func_230466_g_();
+        private boolean showHoverOverlay() {
+//         return !this.challenge.isFixedPosition() || !this.challenge.isRequired();
             return true;
         }
 
         public boolean mouseClicked(double mouseX, double mouseY, int button) {
             double deltaX = mouseX - (double) this.list.getRowLeft();
-            double deltaY = mouseY - (double) this.list.getRowTop(this.list.getEventListeners().indexOf(this));
-            if (this.func_238920_a_() && deltaX <= 32.0D) {
+            double deltaY = mouseY - (double) this.list.getRowTop(this.list.children().indexOf(this));
+            if (this.showHoverOverlay() && deltaX <= 32.0D) {
                 if (list.temp.isDisabled(this.challenge)) {
                     ChallengeCompatibility compatibility = this.challenge.getCompatibility();
                     if (compatibility.isCompatible()) {
                         list.temp.enable(this.challenge);
                     } else {
-                        ITextComponent itextcomponent = compatibility.getConfirmMessage();
-                        this.mc.displayGuiScreen(new ConfirmScreen((p_238921_1_) -> {
-                            this.mc.displayGuiScreen(this.screen);
+                        Component itextcomponent = compatibility.getConfirmMessage();
+                        this.mc.setScreen(new ConfirmScreen((p_238921_1_) -> {
+                            this.mc.setScreen(this.screen);
                             if (p_238921_1_) {
                                 list.temp.enable(this.challenge);
                             }

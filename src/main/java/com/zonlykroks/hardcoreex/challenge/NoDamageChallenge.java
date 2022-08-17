@@ -1,9 +1,8 @@
 package com.zonlykroks.hardcoreex.challenge;
 
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
-import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 /**
@@ -36,9 +35,9 @@ public class NoDamageChallenge extends Challenge {
         event.setCanceled(true);
 
         // Check for server side player entity.
-        if (event.getEntityLiving() instanceof ServerPlayerEntity) {
+        if (event.getEntityLiving() instanceof ServerPlayer) {
             // Fail challenge.
-            this.failChallenge((PlayerEntity) event.getEntityLiving());
+            this.failChallenge((Player) event.getEntityLiving());
         }
     }
 }

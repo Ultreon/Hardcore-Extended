@@ -1,8 +1,8 @@
 package com.zonlykroks.hardcoreex.event.handlers;
 
 import com.zonlykroks.hardcoreex.HardcoreExtended;
-import net.minecraft.client.gui.screen.DirtMessageScreen;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.client.gui.screens.GenericDirtMessageScreen;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
@@ -16,7 +16,7 @@ public class ClientEvents {
     @SubscribeEvent
     public static void onOpenScreen(GuiOpenEvent event) {
         if (event.getGui() == null && !joined) {
-            DirtMessageScreen screen = new DirtMessageScreen(new TranslationTextComponent("message.hardcoreex.world_init"));
+            GenericDirtMessageScreen screen = new GenericDirtMessageScreen(new TranslatableComponent("message.hardcoreex.world_init"));
             event.setGui(screen);
             joined = true;
 //            Networking.sendToServer(new RequestChallengesPacket());

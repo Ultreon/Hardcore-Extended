@@ -1,8 +1,8 @@
 package com.zonlykroks.hardcoreex;
 
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.loading.FMLEnvironment;
 
@@ -41,7 +41,7 @@ public class SideExecutor {
     public static <T> T unsafeGetForSide(Entity entity, Supplier<Supplier<T>> clientTarget, Supplier<Supplier<T>> serverTarget) {
         switch (FMLEnvironment.dist) {
             case CLIENT:
-                return entity.getEntityWorld().isRemote() ? clientTarget.get().get() : serverTarget.get().get();
+                return entity.getCommandSenderWorld().isClientSide() ? clientTarget.get().get() : serverTarget.get().get();
             case DEDICATED_SERVER:
                 return serverTarget.get().get();
             default:
@@ -49,10 +49,10 @@ public class SideExecutor {
         }
     }
 
-    public static <T> T unsafeGetForSide(PlayerEntity entity, Supplier<Supplier<T>> clientTarget, Supplier<Supplier<T>> serverTarget) {
+    public static <T> T unsafeGetForSide(Player entity, Supplier<Supplier<T>> clientTarget, Supplier<Supplier<T>> serverTarget) {
         switch (FMLEnvironment.dist) {
             case CLIENT:
-                return !entity.isServerWorld() ? clientTarget.get().get() : serverTarget.get().get();
+                return !entity.isEffectiveAi() ? clientTarget.get().get() : serverTarget.get().get();
             case DEDICATED_SERVER:
                 return serverTarget.get().get();
             default:
@@ -60,10 +60,10 @@ public class SideExecutor {
         }
     }
 
-    public static <T> T unsafeGetForSide(World world, Supplier<Supplier<T>> clientTarget, Supplier<Supplier<T>> serverTarget) {
+    public static <T> T unsafeGetForSide(Level world, Supplier<Supplier<T>> clientTarget, Supplier<Supplier<T>> serverTarget) {
         switch (FMLEnvironment.dist) {
             case CLIENT:
-                return world.isRemote() ? clientTarget.get().get() : serverTarget.get().get();
+                return world.isClientSide() ? clientTarget.get().get() : serverTarget.get().get();
             case DEDICATED_SERVER:
                 return serverTarget.get().get();
             default:

@@ -1,6 +1,6 @@
 package com.zonlykroks.hardcoreex.challenge;
 
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.event.entity.living.LivingHealEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
@@ -30,7 +30,7 @@ public class NoRegenerationChallenge extends Challenge {
      */
     @SubscribeEvent
     public void onPlayerHeal(LivingHealEvent event) {
-        if (event.getEntityLiving() instanceof PlayerEntity) {
+        if (event.getEntityLiving() instanceof Player) {
             event.setCanceled(true);
         }
     }

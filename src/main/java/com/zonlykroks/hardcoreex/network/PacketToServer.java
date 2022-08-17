@@ -1,7 +1,7 @@
 package com.zonlykroks.hardcoreex.network;
 
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.network.NetworkManager;
+import net.minecraft.network.Connection;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.fml.network.NetworkDirection;
 import net.minecraftforge.fml.network.NetworkEvent;
 import org.jetbrains.annotations.NotNull;
@@ -23,5 +23,5 @@ public abstract class PacketToServer<T extends PacketToServer<T>> extends BasePa
         return true;
     }
 
-    protected abstract void handle(@NotNull NetworkManager connection, @NotNull ServerPlayerEntity sender);
+    protected abstract void handle(@NotNull Connection connection, @NotNull ServerPlayer sender);
 }

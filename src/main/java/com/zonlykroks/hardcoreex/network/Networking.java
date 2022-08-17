@@ -3,8 +3,8 @@ package com.zonlykroks.hardcoreex.network;
 import com.zonlykroks.hardcoreex.HardcoreExtended;
 import com.zonlykroks.hardcoreex.network.packets.*;
 import net.minecraft.client.Minecraft;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.network.NetworkManager;
+import net.minecraft.network.Connection;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.fml.network.FMLHandshakeHandler;
 import net.minecraftforge.fml.network.NetworkDirection;
 import net.minecraftforge.fml.network.NetworkRegistry;
@@ -17,8 +17,8 @@ import java.util.Objects;
 public final class Networking {
     private static final String VERSION = "hardcore-ex network 2021.12.26-23.00";
 
-    public static NetworkManager getManager() {
-        return Objects.requireNonNull(Minecraft.getInstance().getConnection()).getNetworkManager();
+    public static Connection getManager() {
+        return Objects.requireNonNull(Minecraft.getInstance().getConnection()).getConnection();
     }
 
     public static SimpleChannel channel;
@@ -114,12 +114,12 @@ public final class Networking {
         channel.send(PacketDistributor.ALL.noArg(), packet);
     }
 
-    public static void sendToClient(PacketToClient<?> packet, ServerPlayerEntity player) {
-        channel.sendTo(packet, player.connection.netManager, NetworkDirection.PLAY_TO_CLIENT);
+    public static void sendToClient(PacketToClient<?> packet, ServerPlayer player) {
+        channel.sendTo(packet, player.connection.connection, NetworkDirection.PLAY_TO_CLIENT);
     }
 
-    public static void sendToClient(BiDirectionalPacket<?> packet, ServerPlayerEntity player) {
-        channel.sendTo(packet, player.connection.netManager, NetworkDirection.PLAY_TO_CLIENT);
+    public static void sendToClient(BiDirectionalPacket<?> packet, ServerPlayer player) {
+        channel.sendTo(packet, player.connection.connection, NetworkDirection.PLAY_TO_CLIENT);
     }
 
     public static void sendToServer(PacketToServer<?> packet) {

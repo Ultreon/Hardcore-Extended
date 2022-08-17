@@ -1,7 +1,7 @@
 package com.zonlykroks.hardcoreex.event;
 
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.world.storage.FolderName;
+import net.minecraft.world.level.storage.LevelResource;
 import net.minecraftforge.eventbus.api.Event;
 
 import java.io.File;
@@ -30,6 +30,6 @@ public class ServerSaveEvent extends Event {
     }
 
     public File getServerFile(String s) {
-        return server.func_240776_a_(new FolderName(s)).toFile();
+        return server.getWorldPath(new LevelResource(s)).toFile();
     }
 }

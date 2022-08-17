@@ -6,16 +6,16 @@ import com.zonlykroks.hardcoreex.init.ModChallenges;
 import com.zonlykroks.hardcoreex.network.Networking;
 import com.zonlykroks.hardcoreex.network.PacketToServer;
 import com.zonlykroks.hardcoreex.server.ServerChallengesManager;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.network.NetworkManager;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.network.Connection;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
 import org.jetbrains.annotations.NotNull;
 
 public class DisableChallengePacket extends PacketToServer<DisableChallengePacket> {
     private final ResourceLocation registryName;
 
-    public DisableChallengePacket(PacketBuffer buffer) {
+    public DisableChallengePacket(FriendlyByteBuf buffer) {
         this.registryName = buffer.readResourceLocation();
     }
 
@@ -24,7 +24,7 @@ public class DisableChallengePacket extends PacketToServer<DisableChallengePacke
     }
 
     @Override
-    protected void handle(@NotNull NetworkManager connection, @NotNull ServerPlayerEntity sender) {
+    protected void handle(@NotNull Connection connection, @NotNull ServerPlayer sender) {
         if (PlayerJoinWorldEvent.isInitialized()) {
             return;
         }
@@ -36,7 +36,7 @@ public class DisableChallengePacket extends PacketToServer<DisableChallengePacke
         Networking.sendToAllClients(new ChallengeDisabledPacket(this.registryName));
     }
 
-    public void toBytes(PacketBuffer buffer) {
+    public void toBytes(FriendlyByteBuf buffer) {
         buffer.writeResourceLocation(registryName);
     }
 }

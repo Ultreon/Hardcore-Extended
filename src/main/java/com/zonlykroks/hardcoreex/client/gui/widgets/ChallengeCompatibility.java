@@ -1,12 +1,12 @@
 package com.zonlykroks.hardcoreex.client.gui.widgets;
 
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.network.chat.Component;
 
 public class ChallengeCompatibility {
     private final boolean compatible;
-    private final ITextComponent confirmMessage;
+    private final Component confirmMessage;
 
-    public ChallengeCompatibility(boolean compatible, ITextComponent confirmMessage) {
+    public ChallengeCompatibility(boolean compatible, Component confirmMessage) {
         this.compatible = compatible;
         this.confirmMessage = confirmMessage;
     }
@@ -15,7 +15,7 @@ public class ChallengeCompatibility {
         return compatible;
     }
 
-    public ITextComponent getConfirmMessage() {
+    public Component getConfirmMessage() {
         return confirmMessage;
     }
 }

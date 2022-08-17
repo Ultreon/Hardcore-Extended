@@ -7,15 +7,15 @@ import com.zonlykroks.hardcoreex.event.handlers.CommonEvents;
 import com.zonlykroks.hardcoreex.init.ModChallenges;
 import com.zonlykroks.hardcoreex.network.Networking;
 import com.zonlykroks.hardcoreex.network.PacketToServer;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.network.NetworkManager;
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.network.Connection;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.server.level.ServerPlayer;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 
 public class RequestChallengesPacket extends PacketToServer<RequestChallengesPacket> {
-    public RequestChallengesPacket(PacketBuffer buffer) {
+    public RequestChallengesPacket(FriendlyByteBuf buffer) {
 
     }
 
@@ -24,7 +24,7 @@ public class RequestChallengesPacket extends PacketToServer<RequestChallengesPac
     }
 
     @Override
-    protected void handle(@NotNull NetworkManager connection, @NotNull ServerPlayerEntity sender) {
+    protected void handle(@NotNull Connection connection, @NotNull ServerPlayer sender) {
         HardcoreExtended.LOGGER.info("Challenges requested.");
         if (CommonEvents.isFirstJoin()) {
             // Initialization here.
@@ -39,7 +39,7 @@ public class RequestChallengesPacket extends PacketToServer<RequestChallengesPac
         }
     }
 
-    public void toBytes(PacketBuffer buffer) {
+    public void toBytes(FriendlyByteBuf buffer) {
 
     }
 

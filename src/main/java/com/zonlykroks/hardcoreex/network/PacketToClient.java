@@ -1,6 +1,6 @@
 package com.zonlykroks.hardcoreex.network;
 
-import net.minecraft.network.NetworkManager;
+import net.minecraft.network.Connection;
 import net.minecraftforge.fml.network.NetworkDirection;
 import net.minecraftforge.fml.network.NetworkEvent;
 
@@ -20,5 +20,5 @@ public abstract class PacketToClient<T extends PacketToClient<T>> extends BasePa
         return true;
     }
 
-    protected abstract void handle(NetworkManager connection);
+    protected abstract void handle(Connection connection);
 }

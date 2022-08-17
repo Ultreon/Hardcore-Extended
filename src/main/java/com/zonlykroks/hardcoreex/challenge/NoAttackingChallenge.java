@@ -1,9 +1,6 @@
 package com.zonlykroks.hardcoreex.challenge;
 
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
@@ -27,7 +24,7 @@ public class NoAttackingChallenge extends Challenge {
      */
     @SubscribeEvent
     public void onLivingDamage(LivingDamageEvent event) {
-        if (event.getSource().getTrueSource() instanceof PlayerEntity) {
+        if (event.getSource().getEntity() instanceof Player) {
             event.setCanceled(true);
         }
     }
@@ -40,7 +37,7 @@ public class NoAttackingChallenge extends Challenge {
      */
     @SubscribeEvent
     public void onLivingHurt(LivingHurtEvent event) {
-        if (event.getSource().getTrueSource() instanceof PlayerEntity) {
+        if (event.getSource().getEntity() instanceof Player) {
             event.setCanceled(true);
         }
     }
@@ -53,7 +50,7 @@ public class NoAttackingChallenge extends Challenge {
      */
     @SubscribeEvent
     public void onLivingDeath(LivingDeathEvent event) {
-        if (event.getSource().getTrueSource() instanceof PlayerEntity) {
+        if (event.getSource().getEntity() instanceof Player) {
             event.setCanceled(true);
         }
     }

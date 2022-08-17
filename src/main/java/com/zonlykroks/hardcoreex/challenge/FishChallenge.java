@@ -1,15 +1,15 @@
 package com.zonlykroks.hardcoreex.challenge;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.vertex.IVertexBuilder;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.math.Quaternion;
+import net.minecraft.client.model.SalmonModel;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.entity.model.SalmonModel;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.vector.Quaternion;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.client.event.RenderPlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import org.jetbrains.annotations.NotNull;
@@ -28,27 +28,27 @@ public class FishChallenge extends Challenge {
     }
 
     @Override
-    protected void playerTick(@NotNull PlayerEntity player) {
+    protected void playerTick(@NotNull Player player) {
         super.playerTick(player);
     }
 
     @SubscribeEvent
     public void onRenderPlayer(RenderPlayerEvent.Pre event) {
         if (isEnabled(true)) {
-            MatrixStack matrices = event.getMatrixStack();
-            IRenderTypeBuffer buffer = event.getBuffers();
+            PoseStack matrices = event.getMatrixStack();
+            MultiBufferSource buffer = event.getBuffers();
             LivingEntity entity = event.getPlayer();
 
-            matrices.push();
-            IVertexBuilder vertices = buffer.getBuffer(RenderType.getEntityTranslucentCull(SALMON_LOCATION));
+            matrices.pushPose();
+            VertexConsumer vertices = buffer.getBuffer(RenderType.entityTranslucentCull(SALMON_LOCATION));
             SalmonModel<Entity> model = new SalmonModel<>();
-            model.setRotationAngles(entity, 0.0f, 0.0f, entity.ticksExisted, entity.rotationYaw, entity.rotationPitch);
-            matrices.rotate(new Quaternion(0, 360f - entity.getYaw(event.getPartialRenderTick())/* - 180 % 360*/, 0, true));
-            matrices.rotate(new Quaternion(entity.getPitch(event.getPartialRenderTick()) + 180f, 0, 0, true));
+            model.setupAnim(entity, 0.0f, 0.0f, entity.tickCount, entity.yRot, entity.xRot);
+            matrices.mulPose(new Quaternion(0, 360f - entity.getViewYRot(event.getPartialRenderTick())/* - 180 % 360*/, 0, true));
+            matrices.mulPose(new Quaternion(entity.getViewXRot(event.getPartialRenderTick()) + 180f, 0, 0, true));
 //            matrices.rotate(new Quaternion(0, 0, 0, true));
             matrices.translate(0, -1.5, 0);
-            model.render(matrices, vertices, event.getLight(), event.getLight() + 1, 1.0F, 1.0F, 1.0F, 1.0F);
-            matrices.pop();
+            model.renderToBuffer(matrices, vertices, event.getLight(), event.getLight() + 1, 1.0F, 1.0F, 1.0F, 1.0F);
+            matrices.popPose();
             event.setCanceled(true);
         }
     }

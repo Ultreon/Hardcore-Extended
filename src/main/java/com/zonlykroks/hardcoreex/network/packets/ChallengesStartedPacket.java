@@ -3,11 +3,11 @@ package com.zonlykroks.hardcoreex.network.packets;
 import com.zonlykroks.hardcoreex.client.ClientChallengeManager;
 import com.zonlykroks.hardcoreex.network.PacketToClient;
 import net.minecraft.client.Minecraft;
-import net.minecraft.network.NetworkManager;
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.network.Connection;
+import net.minecraft.network.FriendlyByteBuf;
 
 public class ChallengesStartedPacket extends PacketToClient<ChallengesStartedPacket> {
-    public ChallengesStartedPacket(PacketBuffer buffer) {
+    public ChallengesStartedPacket(FriendlyByteBuf buffer) {
 
     }
 
@@ -16,12 +16,12 @@ public class ChallengesStartedPacket extends PacketToClient<ChallengesStartedPac
     }
 
     @Override
-    protected void handle(NetworkManager connection) {
-        Minecraft.getInstance().displayGuiScreen(null);
+    protected void handle(Connection connection) {
+        Minecraft.getInstance().setScreen(null);
         ClientChallengeManager.get().sendStart();
     }
 
-    public void toBytes(PacketBuffer buffer) {
+    public void toBytes(FriendlyByteBuf buffer) {
 
     }
 }

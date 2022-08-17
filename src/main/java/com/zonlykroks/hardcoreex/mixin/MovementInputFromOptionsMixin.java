@@ -2,9 +2,9 @@ package com.zonlykroks.hardcoreex.mixin;
 
 import com.zonlykroks.hardcoreex.client.ClientChallengeManager;
 import com.zonlykroks.hardcoreex.init.ModChallenges;
-import net.minecraft.client.GameSettings;
-import net.minecraft.util.MovementInput;
-import net.minecraft.util.MovementInputFromOptions;
+import net.minecraft.client.Options;
+import net.minecraft.client.player.Input;
+import net.minecraft.client.player.KeyboardInput;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -12,17 +12,17 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(MovementInputFromOptions.class)
-public abstract class MovementInputFromOptionsMixin extends MovementInput {
+@Mixin(KeyboardInput.class)
+public abstract class MovementInputFromOptionsMixin extends Input {
     @Shadow
     @Final
-    private GameSettings gameSettings;
+    private Options gameSettings;
 
     @Inject(method = "tickMovement(Z)V", at = @At("HEAD"), cancellable = true)
     public void tickMovement(boolean isForced, CallbackInfo ci) {
         if (ClientChallengeManager.get().isEnabled(ModChallenges.NO_WALKING)) {
-            this.jump = this.gameSettings.keyBindJump.isKeyDown();
-            this.sneaking = this.gameSettings.keyBindSneak.isKeyDown();
+            this.jumping = this.gameSettings.keyJump.isDown();
+            this.shiftKeyDown = this.gameSettings.keyShift.isDown();
 //            if (isForced) {
 //                this.moveStrafe = (float) ((double) this.moveStrafe * 0.3D);
 //                this.moveForward = (float) ((double) this.moveForward * 0.3D);

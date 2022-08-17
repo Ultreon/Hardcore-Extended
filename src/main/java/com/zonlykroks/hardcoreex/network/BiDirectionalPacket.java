@@ -1,7 +1,7 @@
 package com.zonlykroks.hardcoreex.network;
 
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.network.NetworkManager;
+import net.minecraft.network.Connection;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.fml.network.NetworkEvent;
 
 import java.util.function.Supplier;
@@ -28,7 +28,7 @@ public abstract class BiDirectionalPacket<T extends BiDirectionalPacket<T>> exte
         return true;
     }
 
-    protected abstract void handleClient(NetworkManager manager);
+    protected abstract void handleClient(Connection manager);
 
-    protected abstract void handleServer(NetworkManager manager, ServerPlayerEntity sender);
+    protected abstract void handleServer(Connection manager, ServerPlayer sender);
 }

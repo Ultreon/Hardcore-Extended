@@ -1,14 +1,10 @@
 package com.zonlykroks.hardcoreex.challenge;
 
 import com.zonlykroks.hardcoreex.HardcoreExtended;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.world.GameRules;
-import net.minecraft.world.server.ServerWorld;
-import net.minecraft.world.storage.IServerWorldInfo;
-import net.minecraftforge.event.entity.living.LivingDeathEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.GameRules;
+import net.minecraft.world.level.storage.ServerLevelData;
 
 /**
  * The no-damage challenge!
@@ -28,7 +24,7 @@ public class AlwaysNightChallenge extends Challenge {
         MinecraftServer server = HardcoreExtended.getServer();
 
         if (server != null) {
-            GameRules.BooleanValue booleanValue = server.getGameRules().get(GameRules.DO_DAYLIGHT_CYCLE);
+            GameRules.BooleanValue booleanValue = server.getGameRules().getRule(GameRules.RULE_DAYLIGHT);
             booleanValue.set(true, server);
         }
     }
@@ -40,11 +36,11 @@ public class AlwaysNightChallenge extends Challenge {
         MinecraftServer server = HardcoreExtended.getServer();
 
         if (server != null) {
-            GameRules.BooleanValue booleanValue = server.getGameRules().get(GameRules.DO_DAYLIGHT_CYCLE);
+            GameRules.BooleanValue booleanValue = server.getGameRules().getRule(GameRules.RULE_DAYLIGHT);
             booleanValue.set(false, server);
 
-            for (ServerWorld world : server.getWorlds()) {
-                IServerWorldInfo worldInfo = (IServerWorldInfo) (world.getWorldInfo());
+            for (ServerLevel world : server.getAllLevels()) {
+                ServerLevelData worldInfo = (ServerLevelData) (world.getLevelData());
                 worldInfo.setDayTime(18000);
             }
         }

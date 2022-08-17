@@ -2,8 +2,8 @@ package com.zonlykroks.hardcoreex;
 
 import com.zonlykroks.hardcoreex.event.handlers.PlayerJoinWorldEvent;
 import com.zonlykroks.hardcoreex.server.ServerChallengesManager;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -38,7 +38,7 @@ public class ServerHooks {
 //        worldData.put("ChallengesEnabled", challengesData);
 //
 //        try {
-//            worldData = CompressedStreamTools.readCompressed(server.func_240776_a_(new FolderName("hardcoreex.dat")).toFile());
+//            worldData = CompressedStreamTools.readCompressed(server.getWorldPath(new FolderName("hardcoreex.dat")).toFile());
 //            ListNBT challengesEnabled = worldData.getList("ChallengesEnabled", 8);
 //            ServerChallengesManager.get().read(challengesEnabled);
 //        } catch (FileNotFoundException ignored) {
@@ -58,8 +58,8 @@ public class ServerHooks {
     @SubscribeEvent
     public static void onEntityJoin(EntityJoinWorldEvent event) {
         Entity entity = event.getEntity();
-        if (entity instanceof ServerPlayerEntity) {
-            ServerPlayerEntity player = (ServerPlayerEntity) entity;
+        if (entity instanceof ServerPlayer) {
+            ServerPlayer player = (ServerPlayer) entity;
             ServerChallengesManager.get().sendChallenges(player);
         }
     }

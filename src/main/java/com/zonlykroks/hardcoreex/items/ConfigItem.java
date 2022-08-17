@@ -1,20 +1,21 @@
 package com.zonlykroks.hardcoreex.items;
 
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
-import net.minecraft.world.World;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Item.Properties;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 
 public class ConfigItem extends Item {
     public ConfigItem(Properties properties) {
-        super(properties.maxStackSize(1));
+        super(properties.stacksTo(1));
     }
 
     @Override
-    public @NotNull ActionResult<ItemStack> onItemRightClick(World worldIn, @NotNull PlayerEntity playerIn, @NotNull Hand handIn) {
-        return ActionResult.resultFail(playerIn.getHeldItem(handIn));
+    public @NotNull InteractionResultHolder<ItemStack> use(Level worldIn, @NotNull Player playerIn, @NotNull InteractionHand handIn) {
+        return InteractionResultHolder.fail(playerIn.getItemInHand(handIn));
     }
 }

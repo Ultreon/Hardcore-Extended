@@ -1,6 +1,6 @@
 package com.zonlykroks.hardcoreex.network;
 
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.fml.network.NetworkEvent;
 
 import java.util.function.Supplier;
@@ -21,5 +21,5 @@ abstract class BasePacket<T extends BasePacket<T>> {
         return true;
     }
 
-    public abstract void toBytes(PacketBuffer buffer);
+    public abstract void toBytes(FriendlyByteBuf buffer);
 }

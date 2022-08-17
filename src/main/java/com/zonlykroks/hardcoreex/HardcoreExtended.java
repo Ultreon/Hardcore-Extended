@@ -9,8 +9,8 @@ import com.zonlykroks.hardcoreex.network.Networking;
 import com.zonlykroks.hardcoreex.render.LayerModel;
 import com.zonlykroks.hardcoreex.server.ServerChallengesManager;
 import net.minecraft.client.Minecraft;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -128,7 +128,7 @@ public class HardcoreExtended {
     @SubscribeEvent
     public void doClientStuff(FMLClientSetupEvent event) {
         // Register the layer renderer
-        Minecraft.getInstance().getRenderManager().getSkinMap().forEach((s, playerRenderer) ->
+        Minecraft.getInstance().getEntityRenderDispatcher().getSkinMap().forEach((s, playerRenderer) ->
                 playerRenderer.addLayer(new LayerModel(playerRenderer)));
     }
 

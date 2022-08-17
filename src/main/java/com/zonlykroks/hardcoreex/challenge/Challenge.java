@@ -8,15 +8,15 @@ import com.zonlykroks.hardcoreex.event.ChallengeFailedEvent;
 import com.zonlykroks.hardcoreex.network.Networking;
 import com.zonlykroks.hardcoreex.network.packets.ChallengeFailedPacket;
 import mcp.MethodsReturnNonnullByDefault;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.GameType;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.GameType;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.TickEvent;
@@ -142,16 +142,16 @@ public abstract class Challenge extends ForgeRegistryEntry<Challenge> implements
      */
     @SubscribeEvent
     public final void onServerTick(@NotNull TickEvent.WorldTickEvent event) {
-        worldTick((ServerWorld) event.world);
+        worldTick((ServerLevel) event.world);
     }
 
-    protected void playerTick(@NotNull PlayerEntity player) {
+    protected void playerTick(@NotNull Player player) {
 
     }
 
-    public TranslationTextComponent getLocalizedName() {
+    public TranslatableComponent getLocalizedName() {
         if (getRegistryName() != null) {
-            return new TranslationTextComponent("challenge." +
+            return new TranslatableComponent("challenge." +
                     getRegistryName().getNamespace() + "." +
                     getRegistryName().getPath().replaceAll("/", "."));
         } else {
@@ -210,16 +210,16 @@ public abstract class Challenge extends ForgeRegistryEntry<Challenge> implements
      * @return the challenge compatibility.
      */
     public ChallengeCompatibility getCompatibility() {
-        return new ChallengeCompatibility(true, new StringTextComponent("TEST"));
+        return new ChallengeCompatibility(true, new TextComponent("TEST"));
     }
 
     /**
      * Let the player know that the challenge was failed.
      */
-    public final void failChallenge(PlayerEntity player) {
-        if (player instanceof ServerPlayerEntity) {
-            player.setGameType(GameType.SPECTATOR);
-            Networking.sendToClient(new ChallengeFailedPacket(this), (ServerPlayerEntity) player);
+    public final void failChallenge(Player player) {
+        if (player instanceof ServerPlayer) {
+            player.setGameMode(GameType.SPECTATOR);
+            Networking.sendToClient(new ChallengeFailedPacket(this), (ServerPlayer) player);
             MinecraftForge.EVENT_BUS.post(new ChallengeFailedEvent(this, player, LogicalSide.SERVER));
         } else {
             Networking.sendToServer(new ChallengeFailedPacket(this));
@@ -234,16 +234,16 @@ public abstract class Challenge extends ForgeRegistryEntry<Challenge> implements
         LivingEntity livingEntity = event.getEntityLiving();
 
         // Check for server side player entity.
-        if (livingEntity instanceof ServerPlayerEntity) {
+        if (livingEntity instanceof ServerPlayer) {
             // Fail challenge.
-            ServerPlayerEntity player = (ServerPlayerEntity) livingEntity;
-            ((ServerPlayerEntity) livingEntity).setGameType(GameType.SPECTATOR);
+            ServerPlayer player = (ServerPlayer) livingEntity;
+            ((ServerPlayer) livingEntity).setGameMode(GameType.SPECTATOR);
             Networking.sendToClient(new ChallengeFailedPacket((Challenge) null), player);
             MinecraftForge.EVENT_BUS.post(new ChallengeFailedEvent(this, player, LogicalSide.SERVER));
         }
     }
 
-    protected void worldTick(@NotNull ServerWorld world) {
+    protected void worldTick(@NotNull ServerLevel world) {
 
     }
 

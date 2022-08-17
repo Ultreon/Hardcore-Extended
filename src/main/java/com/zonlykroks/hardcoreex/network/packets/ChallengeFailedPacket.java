@@ -8,10 +8,10 @@ import com.zonlykroks.hardcoreex.init.ModChallenges;
 import com.zonlykroks.hardcoreex.network.BiDirectionalPacket;
 import com.zonlykroks.hardcoreex.network.Networking;
 import net.minecraft.client.Minecraft;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.network.NetworkManager;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.network.Connection;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.MinecraftForge;
@@ -22,7 +22,7 @@ public class ChallengeFailedPacket extends BiDirectionalPacket<ChallengeFailedPa
     @Nullable
     private final ResourceLocation challenge;
 
-    public ChallengeFailedPacket(PacketBuffer buffer) {
+    public ChallengeFailedPacket(FriendlyByteBuf buffer) {
         if (buffer.readBoolean()) {
             this.challenge = buffer.readResourceLocation();
         } else {
@@ -36,17 +36,17 @@ public class ChallengeFailedPacket extends BiDirectionalPacket<ChallengeFailedPa
 
     @OnlyIn(Dist.CLIENT)
     @Override
-    protected void handleClient(NetworkManager connection) {
+    protected void handleClient(Connection connection) {
         Challenge challenge = ModChallenges.getRegistry().getValue(this.challenge);
         if (challenge == null) throw new IllegalStateException("Challenge not found on client.");
 
         Minecraft mc = Minecraft.getInstance();
         MinecraftForge.EVENT_BUS.post(new ChallengeFailedEvent(challenge, Minecraft.getInstance().player, LogicalSide.CLIENT));
-        mc.displayGuiScreen(new ChallengeFailedScreen(challenge));
+        mc.setScreen(new ChallengeFailedScreen(challenge));
     }
 
     @Override
-    protected void handleServer(NetworkManager manager, ServerPlayerEntity sender) {
+    protected void handleServer(Connection manager, ServerPlayer sender) {
         Challenge challenge = ModChallenges.getRegistry().getValue(this.challenge);
 
         if (challenge == null) {
@@ -57,7 +57,7 @@ public class ChallengeFailedPacket extends BiDirectionalPacket<ChallengeFailedPa
         }
     }
 
-    public void toBytes(PacketBuffer buffer) {
+    public void toBytes(FriendlyByteBuf buffer) {
         if (challenge != null) {
             buffer.writeResourceLocation(challenge);
         }

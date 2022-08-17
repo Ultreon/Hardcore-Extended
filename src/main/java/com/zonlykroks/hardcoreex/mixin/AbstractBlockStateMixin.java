@@ -2,10 +2,10 @@ package com.zonlykroks.hardcoreex.mixin;
 
 import com.zonlykroks.hardcoreex.init.ModChallenges;
 import com.zonlykroks.hardcoreex.server.ServerChallengesManager;
-import net.minecraft.block.AbstractBlock;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.loot.LootContext;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -16,7 +16,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
-@Mixin(AbstractBlock.AbstractBlockState.class)
+@Mixin(BlockBehaviour.BlockStateBase.class)
 public abstract class AbstractBlockStateMixin {
     @Inject(method = "getDrops", at = @At("HEAD"), cancellable = true)
     public void getDrops(LootContext.Builder builder, CallbackInfoReturnable<List<ItemStack>> cir) {

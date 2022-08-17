@@ -10,12 +10,11 @@ import com.zonlykroks.hardcoreex.network.packets.ChallengeDisabledPacket;
 import com.zonlykroks.hardcoreex.network.packets.ChallengeEnabledPacket;
 import com.zonlykroks.hardcoreex.network.packets.ChallengesStartedPacket;
 import com.zonlykroks.hardcoreex.network.packets.OpenChallengesMenuPacket;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.nbt.*;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.management.OpEntry;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.storage.FolderName;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.players.ServerOpListEntry;
+import net.minecraft.world.level.storage.LevelResource;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
@@ -61,18 +60,18 @@ public class ServerChallengesManager extends ChallengeManager {
         instance = new ServerChallengesManager(event.getServer());
 
         MinecraftServer server = event.getServer();
-        CompoundNBT worldData = new CompoundNBT();
-        ListNBT challengesData = instance.save(new ListNBT());
+        CompoundTag worldData = new CompoundTag();
+        ListTag challengesData = instance.save(new ListTag());
         worldData.put("ChallengesEnabled", challengesData);
 
         try {
-            worldData = CompressedStreamTools.readCompressed(server.func_240776_a_(new FolderName("hardcoreex.dat")).toFile());
+            worldData = NbtIo.readCompressed(server.getWorldPath(new LevelResource("hardcoreex.dat")).toFile());
         } catch (FileNotFoundException ignored) {
 
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        ListNBT challengesEnabled = worldData.getList("ChallengesEnabled", 8);
+        ListTag challengesEnabled = worldData.getList("ChallengesEnabled", 8);
         instance.load(challengesEnabled);
     }
 
@@ -85,12 +84,12 @@ public class ServerChallengesManager extends ChallengeManager {
     }
 
     private static void onServerSave(ServerSaveEvent event) {
-        CompoundNBT data = new CompoundNBT();
-        ListNBT challenges = ServerChallengesManager.get().save(new ListNBT());
+        CompoundTag data = new CompoundTag();
+        ListTag challenges = ServerChallengesManager.get().save(new ListTag());
         data.put("ChallengesEnabled", challenges);
 
         try {
-            CompressedStreamTools.writeCompressed(data, event.getServerFile("hardcoreex.dat"));
+            NbtIo.writeCompressed(data, event.getServerFile("hardcoreex.dat"));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -141,19 +140,19 @@ public class ServerChallengesManager extends ChallengeManager {
         }
     }
 
-    private ListNBT save(ListNBT nbt) {
+    private ListTag save(ListTag nbt) {
         for (Challenge challenge : enabled) {
             if (challenge.getRegistryName() != null) {
-                nbt.add(StringNBT.valueOf(challenge.getRegistryName().toString()));
+                nbt.add(StringTag.valueOf(challenge.getRegistryName().toString()));
             }
         }
         return nbt;
     }
 
-    private void load(ListNBT nbt) {
-        for (INBT element : nbt) {
-            if (element instanceof StringNBT) {
-                String string = element.getString();
+    private void load(ListTag nbt) {
+        for (Tag element : nbt) {
+            if (element instanceof StringTag) {
+                String string = element.getAsString();
                 ResourceLocation rl = new ResourceLocation(string);
                 Challenge value = ModChallenges.getRegistry().getValue(rl);
                 if (value != null) {
@@ -172,9 +171,9 @@ public class ServerChallengesManager extends ChallengeManager {
 
     public void start() {
         started = true;
-        server.setWhitelistEnabled(true);
-        for (OpEntry entry : new ArrayList<>(server.getPlayerList().getOppedPlayers().getEntries())) {
-            server.getPlayerList().removeOp(Objects.requireNonNull(entry.getValue()));
+        server.setEnforceWhitelist(true);
+        for (ServerOpListEntry entry : new ArrayList<>(server.getPlayerList().getOps().getEntries())) {
+            server.getPlayerList().deop(Objects.requireNonNull(entry.getUser()));
         }
         Networking.sendToAllClients(new ChallengesStartedPacket());
     }
@@ -183,7 +182,7 @@ public class ServerChallengesManager extends ChallengeManager {
         return started;
     }
 
-    public void sendChallenges(ServerPlayerEntity player) {
+    public void sendChallenges(ServerPlayer player) {
         if (started) {
             for (Challenge challenge : enabled) {
                 Networking.sendToClient(new ChallengeEnabledPacket(challenge.getRegistryName()), player);

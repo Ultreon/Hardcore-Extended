@@ -1,8 +1,8 @@
 package com.zonlykroks.hardcoreex.event.handlers;
 
 import com.zonlykroks.hardcoreex.init.ModItems;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.item.ItemStack;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -11,7 +11,7 @@ import net.minecraftforge.fml.common.Mod;
 @Mod.EventBusSubscriber(Dist.CLIENT)
 public class PlayerJoinWorldEvent {
     private static Boolean firstJoin = null;
-    private static ServerPlayerEntity creator;
+    private static ServerPlayer creator;
 
     @SubscribeEvent
     public static void drawLast(PlayerEvent.PlayerLoggedInEvent event) {
@@ -19,12 +19,12 @@ public class PlayerJoinWorldEvent {
             firstJoin = true;
         }
 
-        if (event.getPlayer() != null && !event.getPlayer().inventory.hasItemStack(new ItemStack(ModItems.CONFIG_ITEM.get()))) {
-            event.getPlayer().inventory.addItemStackToInventory(new ItemStack(ModItems.CONFIG_ITEM.get()));
+        if (event.getPlayer() != null && !event.getPlayer().inventory.contains(new ItemStack(ModItems.CONFIG_ITEM.get()))) {
+            event.getPlayer().inventory.add(new ItemStack(ModItems.CONFIG_ITEM.get()));
         }
     }
 
-    public static void setupComplete(ServerPlayerEntity creator) {
+    public static void setupComplete(ServerPlayer creator) {
         firstJoin = false;
         PlayerJoinWorldEvent.creator = creator;
     }
@@ -33,7 +33,7 @@ public class PlayerJoinWorldEvent {
         return creator != null;
     }
 
-    public static ServerPlayerEntity getCreator() {
+    public static ServerPlayer getCreator() {
         return creator;
     }
 

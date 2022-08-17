@@ -2,7 +2,7 @@ package com.zonlykroks.hardcoreex.init;
 
 import com.zonlykroks.hardcoreex.HardcoreExtended;
 import com.zonlykroks.hardcoreex.items.SelfDestructingItem;
-import net.minecraft.item.Item;
+import net.minecraft.world.item.Item;
 import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;

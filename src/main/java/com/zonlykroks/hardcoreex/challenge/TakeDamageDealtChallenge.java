@@ -1,7 +1,7 @@
 package com.zonlykroks.hardcoreex.challenge;
 
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
@@ -18,10 +18,10 @@ public class TakeDamageDealtChallenge extends Challenge {
 
     @SubscribeEvent
     public void onAttack(LivingDamageEvent event) {
-        Entity trueSource = event.getSource().getTrueSource();
-        if (trueSource instanceof PlayerEntity) {
+        Entity trueSource = event.getSource().getEntity();
+        if (trueSource instanceof Player) {
             float amount = event.getAmount();
-            trueSource.attackEntityFrom(event.getSource(), amount);
+            trueSource.hurt(event.getSource(), amount);
         }
     }
 }

@@ -1,6 +1,6 @@
 package com.zonlykroks.hardcoreex.mixin;
 
-import net.minecraft.block.BedBlock;
+import net.minecraft.world.level.block.BedBlock;
 import org.spongepowered.asm.mixin.Mixin;
 
 @Mixin(BedBlock.class)

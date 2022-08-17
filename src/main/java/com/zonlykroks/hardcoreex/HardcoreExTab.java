@@ -1,16 +1,16 @@
 package com.zonlykroks.hardcoreex;
 
 import com.zonlykroks.hardcoreex.init.ModItems;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.ItemStack;
 
-public class HardcoreExTab extends ItemGroup {
+public class HardcoreExTab extends CreativeModeTab {
     public HardcoreExTab() {
         super("HardcoreExtendedItemGroup ");
     }
 
     @Override
-    public ItemStack createIcon() {
+    public ItemStack makeIcon() {
         return new ItemStack(ModItems.CONFIG_ITEM.get());
     }
 }

@@ -1,7 +1,7 @@
 package com.zonlykroks.hardcoreex.challenge;
 
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
@@ -18,15 +18,15 @@ public class JumpParalysisChallenge extends Challenge {
 
     @SubscribeEvent
     public void playerJump(LivingEvent.LivingJumpEvent event) {
-        if (isEnabled(event.getEntityLiving().getEntityWorld().isRemote)) {
+        if (isEnabled(event.getEntityLiving().getCommandSenderWorld().isClientSide)) {
             Entity entity = event.getEntity();
-            if (entity instanceof PlayerEntity) {
-                PlayerEntity player = (PlayerEntity) entity;
+            if (entity instanceof Player) {
+                Player player = (Player) entity;
 
-                double x = player.getMotion().x;
-                double z = player.getMotion().z;
+                double x = player.getDeltaMovement().x;
+                double z = player.getDeltaMovement().z;
 
-                player.setMotion(x, -0.1, z); // Set motion downwards if already was in air.}
+                player.setDeltaMovement(x, -0.1, z); // Set motion downwards if already was in air.}
             }
         }
     }

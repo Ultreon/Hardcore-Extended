@@ -8,9 +8,9 @@ import com.zonlykroks.hardcoreex.init.ModChallenges;
 import com.zonlykroks.hardcoreex.network.packets.ChallengeDisabledPacket;
 import com.zonlykroks.hardcoreex.network.packets.ChallengeEnabledPacket;
 import com.zonlykroks.hardcoreex.server.ServerChallengesManager;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.LogicalSide;
@@ -32,14 +32,14 @@ public abstract class ChallengeManager {
     }
 
     public static ChallengeManager getForEntity(Entity entity) {
-        if (entity instanceof PlayerEntity) {
-            return SideExecutor.unsafeGetForSide((PlayerEntity) entity, () -> ClientChallengeManager::get, () -> ServerChallengesManager::get);
+        if (entity instanceof Player) {
+            return SideExecutor.unsafeGetForSide((Player) entity, () -> ClientChallengeManager::get, () -> ServerChallengesManager::get);
         } else {
             return SideExecutor.unsafeGetForSide(entity, () -> ClientChallengeManager::get, () -> ServerChallengesManager::get);
         }
     }
 
-    public static ChallengeManager getForWorld(World world) {
+    public static ChallengeManager getForWorld(Level world) {
         return SideExecutor.unsafeGetForSide(world, () -> ClientChallengeManager::get, () -> ServerChallengesManager::get);
     }
 

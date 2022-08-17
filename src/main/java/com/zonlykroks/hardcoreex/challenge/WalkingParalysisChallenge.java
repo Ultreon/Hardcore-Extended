@@ -1,11 +1,9 @@
 package com.zonlykroks.hardcoreex.challenge;
 
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 /**
@@ -27,10 +25,10 @@ public class WalkingParalysisChallenge extends Challenge {
     @OnlyIn(Dist.CLIENT)
     @SubscribeEvent
     public void onPlayerMotion(TickEvent.PlayerTickEvent event) {
-        PlayerEntity player = event.player;
-        double x = -player.getMotion().x;
-        double y = player.getMotion().y;
-        double z = -player.getMotion().z;
-        player.setMotion(0, y, 0);
+        Player player = event.player;
+        double x = -player.getDeltaMovement().x;
+        double y = player.getDeltaMovement().y;
+        double z = -player.getDeltaMovement().z;
+        player.setDeltaMovement(0, y, 0);
     }
 }
