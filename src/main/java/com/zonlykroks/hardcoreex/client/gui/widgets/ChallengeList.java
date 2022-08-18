@@ -7,8 +7,8 @@ import com.zonlykroks.hardcoreex.HardcoreExtended;
 import com.zonlykroks.hardcoreex.challenge.Challenge;
 import com.zonlykroks.hardcoreex.client.ClientChallengeManager;
 import com.zonlykroks.hardcoreex.client.gui.screen.ChallengeScreen;
-import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.ChatFormatting;
+import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.gui.components.ObjectSelectionList;
@@ -17,10 +17,10 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
-import net.minecraft.util.text.TextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -31,7 +31,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
  *
  * @author Qboi123
  */
-@SuppressWarnings({"unused", "deprecation"})
+@SuppressWarnings({"unused"})
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
 @OnlyIn(Dist.CLIENT)
@@ -62,8 +62,8 @@ public class ChallengeList extends ObjectSelectionList<ChallengeList.ChallengeEn
     }
 
     protected void renderHeader(PoseStack p_230448_1_, int p_230448_2_, int p_230448_3_, Tesselator p_230448_4_) {
-        Component itextcomponent = (new TextComponent("")).append(this.title).withStyle(ChatFormatting.UNDERLINE, ChatFormatting.BOLD);
-        this.minecraft.font.draw(p_230448_1_, itextcomponent, (float) (p_230448_2_ + this.width / 2 - this.minecraft.font.width(itextcomponent) / 2), (float) Math.min(this.y0 + 3, p_230448_3_), 16777215);
+        Component component = (new TextComponent("")).append(this.title).withStyle(ChatFormatting.UNDERLINE, ChatFormatting.BOLD);
+        this.minecraft.font.draw(p_230448_1_, component, (float) (p_230448_2_ + this.width / 2 - this.minecraft.font.width(component) / 2), (float) Math.min(this.y0 + 3, p_230448_3_), 16777215);
     }
 
     public int getRowWidth() {
@@ -74,7 +74,6 @@ public class ChallengeList extends ObjectSelectionList<ChallengeList.ChallengeEn
         return this.x1 - 6;
     }
 
-    @SuppressWarnings("deprecation")
     @OnlyIn(Dist.CLIENT)
     public static class ChallengeEntry extends ObjectSelectionList.Entry<ChallengeEntry> {
         private final ChallengeList list;
@@ -98,7 +97,7 @@ public class ChallengeList extends ObjectSelectionList<ChallengeList.ChallengeEn
             this.screen = screen;
             this.challenge = challenge;
             this.list = list;
-            this.reorderingLocalizedName = getReordering(minecraft, challenge.getLocalizedName());
+            this.reorderingLocalizedName = getReordering(minecraft, challenge.getDescription());
 
             // Todo: allow creation of custom challenges.
 //         this.reorderingIncompatible = cacheName(p_i241201_1_, ChallengeList.INCOMPATIBLE_TEXT);
@@ -109,13 +108,13 @@ public class ChallengeList extends ObjectSelectionList<ChallengeList.ChallengeEn
          *
          * @param minecraft the minecraft instance.
          * @param text      the text component to process.
-         * @return a {@link IReorderingProcessor reordering processor}.
+         * @return a {@link FormattedCharSequence reordering processor}.
          */
         private static FormattedCharSequence getReordering(Minecraft minecraft, Component text) {
             int i = minecraft.font.width(text);
             if (i > 157) {
-                FormattedText itextproperties = FormattedText.composite(minecraft.font.substrByWidth(text, 157 - minecraft.font.width("...")), FormattedText.of("..."));
-                return Language.getInstance().getVisualOrder(itextproperties);
+                FormattedText formattedText = FormattedText.composite(minecraft.font.substrByWidth(text, 157 - minecraft.font.width("...")), FormattedText.of("..."));
+                return Language.getInstance().getVisualOrder(formattedText);
             } else {
                 return text.getVisualOrderText();
             }
@@ -133,7 +132,7 @@ public class ChallengeList extends ObjectSelectionList<ChallengeList.ChallengeEn
          * @param mouseX       real mouse x coordinate.
          * @param mouseY       real mouse y coordinate.
          * @param p_230432_9_  ...
-         * @param partialTicks the {@link Minecraft#getRenderPartialTicks() render partial ticks}.
+         * @param partialTicks the {@link Minecraft#getFrameTime()}  render partial ticks}.
          */
         @SuppressWarnings({"CommentedOutCode", "SpellCheckingInspection"})
         public void render(PoseStack matrixStack, int unknown1, int subY, int subX, int unknown2, int unknown3, int mouseX, int mouseY, boolean p_230432_9_, float partialTicks) {
@@ -144,15 +143,15 @@ public class ChallengeList extends ObjectSelectionList<ChallengeList.ChallengeEn
 //            AbstractGui.fill(p_230432_1_, p_230432_4_ - 1, p_230432_3_ - 1, p_230432_4_ + p_230432_5_ - 9, p_230432_3_ + p_230432_6_ + 1, -8978432);
 //         }
 
-            this.mc.getTextureManager().bind(this.challenge.getTextureLocation());
-            RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+            RenderSystem.setShaderTexture(0, this.challenge.getTextureLocation());
+            RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
             GuiComponent.blit(matrixStack, subX, subY, 0.0F, 0.0F, 32, 32, 32, 32);
             FormattedCharSequence reorderingLocalizedName = this.reorderingLocalizedName;
 //         IBidiRenderer ibidirenderer = this.descriptionDisplayCache;
             if (this.showHoverOverlay() && (this.mc.options.touchscreen || p_230432_9_)) {
-                this.mc.getTextureManager().bind(ChallengeList.ICONS);
+                RenderSystem.setShaderTexture(0, ChallengeList.ICONS);
                 GuiComponent.fill(matrixStack, subX, subY, subX + 32, subY + 32, -1601138544);
-                RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+                RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
                 int i = mouseX - subX;
                 int j = mouseY - subY;
 
@@ -202,14 +201,14 @@ public class ChallengeList extends ObjectSelectionList<ChallengeList.ChallengeEn
                     if (compatibility.isCompatible()) {
                         list.temp.enable(this.challenge);
                     } else {
-                        Component itextcomponent = compatibility.getConfirmMessage();
+                        Component component = compatibility.getConfirmMessage();
                         this.mc.setScreen(new ConfirmScreen((p_238921_1_) -> {
                             this.mc.setScreen(this.screen);
                             if (p_238921_1_) {
                                 list.temp.enable(this.challenge);
                             }
 
-                        }, ChallengeList.INCOMPATIBLE_CONFIRM_TITLE, itextcomponent));
+                        }, ChallengeList.INCOMPATIBLE_CONFIRM_TITLE, component));
                     }
 
                     this.list.screen.reloadAll();
@@ -226,6 +225,11 @@ public class ChallengeList extends ObjectSelectionList<ChallengeList.ChallengeEn
             }
 
             return false;
+        }
+
+        @Override
+        public Component getNarration() {
+            return new TextComponent("Challenge, " + this.challenge.getDescription());
         }
     }
 }

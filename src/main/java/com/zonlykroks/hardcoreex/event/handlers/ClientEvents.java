@@ -4,7 +4,7 @@ import com.zonlykroks.hardcoreex.HardcoreExtended;
 import net.minecraft.client.gui.screens.GenericDirtMessageScreen;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.GuiOpenEvent;
+import net.minecraftforge.client.event.ScreenOpenEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -14,10 +14,10 @@ public class ClientEvents {
     private static boolean joined = false;
 
     @SubscribeEvent
-    public static void onOpenScreen(GuiOpenEvent event) {
-        if (event.getGui() == null && !joined) {
+    public static void onOpenScreen(ScreenOpenEvent event) {
+        if (event.getScreen() == null && !joined) {
             GenericDirtMessageScreen screen = new GenericDirtMessageScreen(new TranslatableComponent("message.hardcoreex.world_init"));
-            event.setGui(screen);
+            event.setScreen(screen);
             joined = true;
 //            Networking.sendToServer(new RequestChallengesPacket());
         }

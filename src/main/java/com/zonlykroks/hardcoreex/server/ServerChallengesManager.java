@@ -10,15 +10,16 @@ import com.zonlykroks.hardcoreex.network.packets.ChallengeDisabledPacket;
 import com.zonlykroks.hardcoreex.network.packets.ChallengeEnabledPacket;
 import com.zonlykroks.hardcoreex.network.packets.ChallengesStartedPacket;
 import com.zonlykroks.hardcoreex.network.packets.OpenChallengesMenuPacket;
+import net.minecraft.nbt.*;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.players.ServerOpListEntry;
 import net.minecraft.world.level.storage.LevelResource;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.server.ServerStartingEvent;
+import net.minecraftforge.event.server.ServerStoppingEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
-import net.minecraftforge.fml.event.server.FMLServerStoppingEvent;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.FileNotFoundException;
@@ -56,7 +57,7 @@ public class ServerChallengesManager extends ChallengeManager {
         }
     }
 
-    private static void serverStart(FMLServerStartingEvent event) {
+    private static void serverStart(ServerStartingEvent event) {
         instance = new ServerChallengesManager(event.getServer());
 
         MinecraftServer server = event.getServer();
@@ -75,7 +76,7 @@ public class ServerChallengesManager extends ChallengeManager {
         instance.load(challengesEnabled);
     }
 
-    private static void serverStop(FMLServerStoppingEvent event) {
+    private static void serverStop(ServerStoppingEvent event) {
         if (instance != null) {
             instance.disableAll();
         }

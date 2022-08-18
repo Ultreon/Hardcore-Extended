@@ -7,7 +7,7 @@ import com.zonlykroks.hardcoreex.common.IChallengeProvider;
 import com.zonlykroks.hardcoreex.event.ChallengeFailedEvent;
 import com.zonlykroks.hardcoreex.network.Networking;
 import com.zonlykroks.hardcoreex.network.packets.ChallengeFailedPacket;
-import mcp.MethodsReturnNonnullByDefault;
+import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
@@ -43,12 +43,6 @@ public abstract class Challenge extends ForgeRegistryEntry<Challenge> implements
 
     public Challenge() {
 
-//        if (ClientChallengeManager.get().isEnabled(this) && !this.enabled) {
-//            ClientChallengeManager.get().enable(this);
-//        }
-//        if (!ClientChallengeManager.get().isEnabled(this) && this.enabled) {
-//            ClientChallengeManager.get().disable(this);
-//        }
     }
 
     @Override
@@ -149,7 +143,7 @@ public abstract class Challenge extends ForgeRegistryEntry<Challenge> implements
 
     }
 
-    public TranslatableComponent getLocalizedName() {
+    public TranslatableComponent getDescription() {
         if (getRegistryName() != null) {
             return new TranslatableComponent("challenge." +
                     getRegistryName().getNamespace() + "." +
@@ -217,8 +211,8 @@ public abstract class Challenge extends ForgeRegistryEntry<Challenge> implements
      * Let the player know that the challenge was failed.
      */
     public final void failChallenge(Player player) {
-        if (player instanceof ServerPlayer) {
-            player.setGameMode(GameType.SPECTATOR);
+        if (player instanceof ServerPlayer serverPlayer) {
+            serverPlayer.setGameMode(GameType.SPECTATOR);
             Networking.sendToClient(new ChallengeFailedPacket(this), (ServerPlayer) player);
             MinecraftForge.EVENT_BUS.post(new ChallengeFailedEvent(this, player, LogicalSide.SERVER));
         } else {
@@ -234,9 +228,8 @@ public abstract class Challenge extends ForgeRegistryEntry<Challenge> implements
         LivingEntity livingEntity = event.getEntityLiving();
 
         // Check for server side player entity.
-        if (livingEntity instanceof ServerPlayer) {
+        if (livingEntity instanceof ServerPlayer player) {
             // Fail challenge.
-            ServerPlayer player = (ServerPlayer) livingEntity;
             ((ServerPlayer) livingEntity).setGameMode(GameType.SPECTATOR);
             Networking.sendToClient(new ChallengeFailedPacket((Challenge) null), player);
             MinecraftForge.EVENT_BUS.post(new ChallengeFailedEvent(this, player, LogicalSide.SERVER));

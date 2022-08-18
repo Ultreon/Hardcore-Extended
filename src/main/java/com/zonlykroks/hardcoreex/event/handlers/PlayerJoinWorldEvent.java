@@ -19,8 +19,8 @@ public class PlayerJoinWorldEvent {
             firstJoin = true;
         }
 
-        if (event.getPlayer() != null && !event.getPlayer().inventory.contains(new ItemStack(ModItems.CONFIG_ITEM.get()))) {
-            event.getPlayer().inventory.add(new ItemStack(ModItems.CONFIG_ITEM.get()));
+        if (event.getPlayer() != null && !event.getPlayer().getInventory().contains(new ItemStack(ModItems.CONFIG_ITEM.get()))) {
+            event.getPlayer().getInventory().add(new ItemStack(ModItems.CONFIG_ITEM.get()));
         }
     }
 

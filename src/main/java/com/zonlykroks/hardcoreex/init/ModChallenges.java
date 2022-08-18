@@ -2,16 +2,16 @@ package com.zonlykroks.hardcoreex.init;
 
 import com.zonlykroks.hardcoreex.HardcoreExtended;
 import com.zonlykroks.hardcoreex.challenge.*;
-import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.RegistryBuilder;
+import net.minecraftforge.registries.RegistryObject;
 
 import java.util.function.Supplier;
 
 @SuppressWarnings("unused")
 public class ModChallenges {
-    public static final DeferredRegister<Challenge> CHALLENGES = DeferredRegister.create(Challenge.class, HardcoreExtended.MOD_ID);
+    public static final DeferredRegister<Challenge> CHALLENGES = DeferredRegister.create(HardcoreExtended.res("challenges"), HardcoreExtended.MOD_ID);
 
     private static final Supplier<IForgeRegistry<Challenge>> registry;
 
@@ -21,7 +21,7 @@ public class ModChallenges {
 
     static {
         // Allow the registry to be registered.
-        registry = CHALLENGES.makeRegistry("challenges", RegistryBuilder::new);
+        registry = CHALLENGES.makeRegistry(Challenge.class, RegistryBuilder::new);
     }
 
     public static final RegistryObject<NoAttackingChallenge> NO_ATTACK = CHALLENGES.register("no_attack", NoAttackingChallenge::new);

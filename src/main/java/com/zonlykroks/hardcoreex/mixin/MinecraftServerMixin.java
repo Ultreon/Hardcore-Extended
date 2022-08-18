@@ -17,8 +17,8 @@ public abstract class MinecraftServerMixin {
     @Shadow
     public abstract Path getWorldPath(LevelResource p_240776_1_);
 
-    @Inject(method = "save(ZZZ)Z", at = @At("HEAD"))
-    public void hardcoreExSave(boolean suppressLog, boolean flush, boolean forced, CallbackInfoReturnable<Boolean> cir) {
+    @Inject(method = "saveAllChunks", at = @At("HEAD"))
+    public void hardcoreex$saveAllChunks(boolean suppressLog, boolean flush, boolean forced, CallbackInfoReturnable<Boolean> cir) {
         MinecraftForge.EVENT_BUS.post(new ServerSaveEvent((MinecraftServer) (Object) this, flush, forced));
     }
 }

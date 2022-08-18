@@ -8,6 +8,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
+import net.minecraftforge.fml.event.config.ModConfigEvent;
 import net.minecraftforge.fml.loading.FMLPaths;
 
 import java.io.File;
@@ -48,12 +49,12 @@ public class Config {
     }
 
     @SubscribeEvent
-    public static void sync(ModConfig.Loading event) {
+    public static void sync(ModConfigEvent.Loading event) {
         sync();
     }
 
     @SubscribeEvent
-    public static void sync(ModConfig.Reloading event) {
+    public static void sync(ModConfigEvent.Reloading event) {
         sync();
     }
 

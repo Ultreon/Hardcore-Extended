@@ -5,9 +5,13 @@ import com.zonlykroks.hardcoreex.challenge.manager.ChallengeManager;
 import com.zonlykroks.hardcoreex.client.ClientChallengeManager;
 import com.zonlykroks.hardcoreex.init.ModChallenges;
 import net.minecraft.core.BlockPos;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.stats.Stat;
 import net.minecraft.stats.Stats;
-import net.minecraft.util.*;
+import net.minecraft.util.Unit;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EntityDimensions;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -29,68 +33,65 @@ public abstract class PlayerEntityMixin extends LivingEntity {
     public abstract void setForcedPose(@Nullable Pose pose);
 
     @Shadow
-    public abstract void addStat(Stat<?> stat);
-
-    @Shadow
-    public abstract void addExhaustion(float exhaustion);
-
-    @Shadow
     public abstract boolean isSwimming();
 
     @Shadow
-    public abstract void addStat(Stat<?> stat, int amount);
+    public abstract void awardStat(Stat<?> pStat);
 
     @Shadow
-    public abstract void addStat(ResourceLocation p_195067_1_, int p_195067_2_);
+    public abstract void causeFoodExhaustion(float pExhaustion);
 
     @Shadow
-    public abstract void addStat(ResourceLocation stat);
+    public abstract void awardStat(ResourceLocation pStat, int pIncrement);
+
+    @Shadow
+    public abstract void awardStat(ResourceLocation pStatKey);
 
     protected PlayerEntityMixin(EntityType<? extends LivingEntity> type, Level worldIn) {
         super(type, worldIn);
     }
 
-    @Inject(method = "jump()V", at = @At("HEAD"), cancellable = true)
-    public void hardcoreex_jump(CallbackInfo ci) {
+    @Inject(method = "jumpFromGround", at = @At("HEAD"), cancellable = true)
+    public void hardcoreex$jumpFromGround(CallbackInfo ci) {
         if (ClientChallengeManager.get().isEnabled(ModChallenges.NO_JUMPING)) {
             ci.cancel();
         }
     }
 
     @Inject(method = "getStandingEyeHeight", at = @At("HEAD"), cancellable = true)
-    public void hardcoreex_getStandingEyeHeight(Pose poseIn, EntityDimensions sizeIn, CallbackInfoReturnable<Float> cir) {
+    public void hardcoreex$getStandingEyeHeight(Pose poseIn, EntityDimensions sizeIn, CallbackInfoReturnable<Float> cir) {
         if (ChallengeManager.getForEntity(this).isEnabled(ModChallenges.ONLY_FISH)) {
             cir.setReturnValue(EntityType.SALMON.getDimensions().height * 0.65F);
         }
     }
 
-    @Inject(method = "addMovementStat", at = @At("HEAD"), cancellable = true)
-    public void hardcoreex_addMovementStat(double p_71000_1_, double p_71000_3_, double p_71000_5_, CallbackInfo ci) {
+    @Inject(method = "checkMovementStatistics", at = @At("HEAD"), cancellable = true)
+    public void hardcoreex$checkMovementStatistics(double p_71000_1_, double p_71000_3_, double p_71000_5_, CallbackInfo ci) {
         if (ChallengeManager.getForEntity(this).isEnabled(ModChallenges.ONLY_FISH)) {
             if (this.isInWater()) {
                 if (this.isSwimming()) {
-                    int i = Math.round(Mth.sqrt(p_71000_1_ * p_71000_1_ + p_71000_3_ * p_71000_3_ + p_71000_5_ * p_71000_5_) * 100.0F);
+                    int i = (int) Math.round(Math.sqrt(p_71000_1_ * p_71000_1_ + p_71000_3_ * p_71000_3_ + p_71000_5_ * p_71000_5_) * 100.0F);
                     if (i > 0) {
-                        this.addStat(Stats.SWIM_ONE_CM, i);
+                        this.awardStat(Stats.SWIM_ONE_CM, i);
                     }
                     ci.cancel();
                 }
             } else {
-                int l = Math.round(Mth.sqrt(p_71000_1_ * p_71000_1_ + p_71000_5_ * p_71000_5_) * 100.0F);
-                this.addExhaustion(0.2F * (float) l * 0.01F);
+                int l = (int) Math.round(Math.sqrt(p_71000_1_ * p_71000_1_ + p_71000_5_ * p_71000_5_) * 100.0F);
+                this.causeFoodExhaustion(0.2F * (float) l * 0.01F);
             }
         }
     }
 
-    @Inject(method = "trySleep(Lnet/minecraft/util/math/BlockPos;)Lcom/mojang/datafixers/util/Either;", at = @At("HEAD"), cancellable = true)
-    public void hardcoreex_trySleep(BlockPos at, CallbackInfoReturnable<Either<Player.BedSleepingProblem, Unit>> cir) {
+    @Inject(method = "startSleepInBed", at = @At("HEAD"), cancellable = true)
+    public void hardcoreex$startSleepInBed(BlockPos at, CallbackInfoReturnable<Either<Player.BedSleepingProblem, Unit>> cir) {
         if (ClientChallengeManager.get().isEnabled(ModChallenges.NO_SLEEP)) {
             cir.setReturnValue(Either.left(Player.BedSleepingProblem.OTHER_PROBLEM));
         }
     }
 
-    @Inject(method = "getSize", at = @At("HEAD"), cancellable = true)
-    public void hardcoreex_getSize(Pose p_213305_1_, CallbackInfoReturnable<EntityDimensions> cir) {
+    @Inject(method = "getDimensions", at = @At("HEAD"), cancellable = true)
+    public void hardcoreex$getDimensions(Pose p_213305_1_, CallbackInfoReturnable<EntityDimensions> cir) {
         if (ChallengeManager.getForEntity(this).isEnabled(ModChallenges.ONLY_FISH)) {
             cir.setReturnValue(EntityType.SALMON.getDimensions());
         }
@@ -120,14 +121,14 @@ public abstract class PlayerEntityMixin extends LivingEntity {
      *
      * @author Qboi123
      */
-    @Inject(method = "livingTick", at = @At("HEAD"))
-    public void hardcoreex_livingTick(CallbackInfo ci) {
+    @Inject(method = "aiStep", at = @At("HEAD"))
+    public void hardcoreex$aiStep(CallbackInfo ci) {
         if (ChallengeManager.getForEntity(this).isEnabled(ModChallenges.ONLY_FISH)) {
             if (!this.isInWater() && this.onGround && this.verticalCollision) {
                 this.setDeltaMovement(this.getDeltaMovement().add((this.random.nextFloat() * 2.0F - 1.0F) * 0.05F, 0.4F, (this.random.nextFloat() * 2.0F - 1.0F) * 0.05F));
                 this.onGround = false;
                 this.hasImpulse = true;
-                this.playSound(this.hardcoreex_getFlopSound(), this.getSoundVolume(), this.getVoicePitch());
+                this.playSound(this.hardcoreex$getFlopSound(), this.getSoundVolume(), this.getVoicePitch());
             }
 
             setSwimming(true);
@@ -137,13 +138,13 @@ public abstract class PlayerEntityMixin extends LivingEntity {
     }
 
     @Inject(method = "updateSwimming", at = @At("HEAD"), cancellable = true)
-    public void hardcoreex_updateSwimming(CallbackInfo ci) {
+    public void hardcoreex$updateSwimming(CallbackInfo ci) {
         if (ChallengeManager.getForEntity(this).isEnabled(ModChallenges.ONLY_FISH)) {
             ci.cancel();
         }
     }
 
-    protected SoundEvent hardcoreex_getFlopSound() {
+    protected SoundEvent hardcoreex$getFlopSound() {
         return SoundEvents.SALMON_FLOP;
     }
 
@@ -155,13 +156,13 @@ public abstract class PlayerEntityMixin extends LivingEntity {
         if (ChallengeManager.getForEntity(this).isEnabled(ModChallenges.ONLY_FISH)) {
             int i = this.getAirSupply();
             super.baseTick();
-            this.hardcoreExUpdateAir(i);
+            this.hardcoreex$updateAir(i);
             return;
         }
         super.baseTick();
     }
 
-    protected void hardcoreExUpdateAir(int p_209207_1_) {
+    protected void hardcoreex$updateAir(int p_209207_1_) {
         if (ChallengeManager.getForEntity(this).isEnabled(ModChallenges.ONLY_FISH)) {
             if (this.isAlive() && !this.isInWaterOrBubble()) {
                 this.setAirSupply(p_209207_1_ - 1);

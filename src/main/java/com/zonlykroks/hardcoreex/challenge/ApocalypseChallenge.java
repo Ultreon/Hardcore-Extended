@@ -25,6 +25,7 @@ public class ApocalypseChallenge extends Challenge {
         super();
     }
 
+    @SuppressWarnings("deprecation")
     @SubscribeEvent
     public void onEntitySpawn(LivingSpawnEvent event) {
         LivingEntity living = event.getEntityLiving();
@@ -38,41 +39,33 @@ public class ApocalypseChallenge extends Challenge {
                 @Nullable LivingEntity entity = null;
                 if (!(living instanceof EnderMan) && !(living instanceof AbstractPiglin) && !(living instanceof Zombie) && !(living instanceof AbstractSkeleton) && !(living instanceof WaterAnimal) && !(living instanceof EnderDragon) && !(living instanceof WitherBoss)) {
                     if (living instanceof Pig) {
-                        living.remove(false);
+                        living.discard();
                         entity = EntityType.ZOGLIN.create((ServerLevel) world, null, null, null, new BlockPos((int) x, (int) y, (int) z), MobSpawnType.NATURAL, true, false);
                     } else if (living.isInWater()) {
                         entity = EntityType.DROWNED.create((ServerLevel) world, null, null, null, new BlockPos((int) x, (int) y, (int) z), MobSpawnType.NATURAL, true, false);
                     } else if (living.isInLava()) {
                         entity = EntityType.ZOGLIN.create((ServerLevel) world, null, null, null, new BlockPos((int) x, (int) y, (int) z), MobSpawnType.NATURAL, true, false);
                     } else if ((living.isOnGround())) {
-                        Biome.BiomeCategory category = world.getBiome(living.blockPosition()).getBiomeCategory();
-                        switch (category) {
-                            case DESERT:
-                            case MESA:
-                                entity = EntityType.HUSK.create((ServerLevel) world, null, null, null, new BlockPos((int) x, (int) y, (int) z), MobSpawnType.NATURAL, true, false);
-                                break;
-                            case NETHER:
-                                entity = EntityType.ZOGLIN.create((ServerLevel) world, null, null, null, new BlockPos((int) x, (int) y, (int) z), MobSpawnType.NATURAL, true, false);
-                                break;
-                            case OCEAN:
-                            case RIVER:
-                                entity = EntityType.DROWNED.create((ServerLevel) world, null, null, null, new BlockPos((int) x, (int) y, (int) z), MobSpawnType.NATURAL, true, false);
-                                break;
-                            case ICY:
-                                entity = EntityType.STRAY.create((ServerLevel) world, null, null, null, new BlockPos((int) x, (int) y, (int) z), MobSpawnType.NATURAL, true, false);
-                                break;
-                            case JUNGLE:
-                                entity = EntityType.CREEPER.create((ServerLevel) world, null, null, null, new BlockPos((int) x, (int) y, (int) z), MobSpawnType.NATURAL, true, false);
-                                break;
-                            default:
-                                entity = EntityType.ZOMBIE.create((ServerLevel) world, null, null, null, new BlockPos((int) x, (int) y, (int) z), MobSpawnType.NATURAL, true, false);
-                                break;
-                        }
+                        Biome.BiomeCategory category = Biome.getBiomeCategory(world.getBiome(living.blockPosition()));
+                        entity = switch (category) {
+                            case DESERT, MESA ->
+                                    EntityType.HUSK.create((ServerLevel) world, null, null, null, new BlockPos((int) x, (int) y, (int) z), MobSpawnType.NATURAL, true, false);
+                            case NETHER ->
+                                    EntityType.ZOGLIN.create((ServerLevel) world, null, null, null, new BlockPos((int) x, (int) y, (int) z), MobSpawnType.NATURAL, true, false);
+                            case OCEAN, RIVER ->
+                                    EntityType.DROWNED.create((ServerLevel) world, null, null, null, new BlockPos((int) x, (int) y, (int) z), MobSpawnType.NATURAL, true, false);
+                            case ICY ->
+                                    EntityType.STRAY.create((ServerLevel) world, null, null, null, new BlockPos((int) x, (int) y, (int) z), MobSpawnType.NATURAL, true, false);
+                            case JUNGLE ->
+                                    EntityType.CREEPER.create((ServerLevel) world, null, null, null, new BlockPos((int) x, (int) y, (int) z), MobSpawnType.NATURAL, true, false);
+                            default ->
+                                    EntityType.ZOMBIE.create((ServerLevel) world, null, null, null, new BlockPos((int) x, (int) y, (int) z), MobSpawnType.NATURAL, true, false);
+                        };
                     }
                 }
 
                 if (entity != null) {
-                    living.remove(false);
+                    living.discard();
                     world.addFreshEntity(entity);
                 }
             }

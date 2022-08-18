@@ -21,5 +21,7 @@
   "challenge.hardcoreex.apocalypse": "Apocalypse",
   "challenge.hardcoreex.lightning_storm": "Lightning Storm",
   "message.hardcoreex.world_init": "Waiting for available challenges...",
-  "message.hardcoreex.insomnia.not_tired": "You aren't tired yet."
+  "message.hardcoreex.insomnia.not_tired": "You aren't tired yet.",
+  "challenges.incompatible": "Challenge is incompatible with mod, do you want to continue?",
+  "challenges.incompatible.confirm.title": "Incompatible Challenges"
 }

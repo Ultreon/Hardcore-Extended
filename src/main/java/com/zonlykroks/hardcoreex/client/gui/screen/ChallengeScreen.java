@@ -5,6 +5,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.zonlykroks.hardcoreex.challenge.Challenge;
 import com.zonlykroks.hardcoreex.client.ClientChallengeManager;
 import com.zonlykroks.hardcoreex.client.gui.widgets.ChallengeList;
+import com.zonlykroks.hardcoreex.init.ModChallenges;
 import com.zonlykroks.hardcoreex.network.Networking;
 import com.zonlykroks.hardcoreex.network.packets.EnableChallengePacket;
 import com.zonlykroks.hardcoreex.network.packets.StartChallengesPacket;
@@ -17,7 +18,6 @@ import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.fml.common.registry.GameRegistry;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -54,7 +54,7 @@ public class ChallengeScreen extends Screen {
     }
 
     protected void init() {
-        Button doneButton = this.addButton(new Button(this.width / 2 - 75, this.height - 48, 150, 20, CommonComponents.GUI_DONE, this::done));
+        Button doneButton = this.addRenderableWidget(new Button(this.width / 2 - 75, this.height - 48, 150, 20, CommonComponents.GUI_DONE, this::done));
 
         // Todo: allow creating custom challenges using challenge packs.
 //      this.addButton(new Button(this.width / 2 - 154, this.height - 48, 150, 20, new TranslationTextComponent("pack.openFolder"), (p_238896_1_) -> {
@@ -69,12 +69,12 @@ public class ChallengeScreen extends Screen {
         // Create the left screen.
         this.leftScreen = new ChallengeList(this, this.minecraft, 200, this.height, new TranslatableComponent("pack.available.title"));
         this.leftScreen.setLeftPos(this.width / 2 - 4 - 200);
-        this.children.add(this.leftScreen);
+        this.addRenderableWidget(this.leftScreen);
 
         // Create the right screen.
         this.rightScreen = new ChallengeList(this, this.minecraft, 200, this.height, new TranslatableComponent("pack.selected.title"));
         this.rightScreen.setLeftPos(this.width / 2 + 4);
-        this.children.add(this.rightScreen);
+        this.addRenderableWidget(this.rightScreen);
 
         // Reload all.
         this.reloadAll();
@@ -89,7 +89,7 @@ public class ChallengeScreen extends Screen {
 
     public void reload() {
         // Reloading challenges.
-        this.challenges = new ArrayList<>(GameRegistry.findRegistry(Challenge.class).getValues());
+        this.challenges = new ArrayList<>(ModChallenges.getRegistry().getValues());
 
         // Enabled / disabled.
         this.enabled = challenges.stream().filter(temp::isEnabled).collect(Collectors.toList());

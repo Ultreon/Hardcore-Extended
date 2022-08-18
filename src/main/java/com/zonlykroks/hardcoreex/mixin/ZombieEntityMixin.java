@@ -19,8 +19,8 @@ public abstract class ZombieEntityMixin extends LivingEntity {
         super(p_i48577_1_, p_i48577_2_);
     }
 
-    @Inject(method = "shouldBurnInDay", at = @At("HEAD"), cancellable = true)
-    public void hardcoreex_isInDaylight(CallbackInfoReturnable<Boolean> cir) {
+    @Inject(method = "isSunSensitive", at = @At("HEAD"), cancellable = true)
+    public void hardcoreex$isSunSensitive(CallbackInfoReturnable<Boolean> cir) {
         if (level.isClientSide()) {
             DistExecutor.unsafeRunForDist(() -> () -> {
                 if (ClientChallengeManager.get().isEnabled(ModChallenges.APOCALYPSE)) {

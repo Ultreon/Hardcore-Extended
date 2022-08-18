@@ -16,8 +16,7 @@ import java.util.Random;
 public class LightningStormChallenge extends Challenge {
     @Override
     protected void playerTick(@NotNull Player player) {
-        if (player instanceof ServerPlayer) {
-            ServerPlayer serverPlayer = (ServerPlayer) player;
+        if (player instanceof ServerPlayer serverPlayer) {
             ServerLevel world = serverPlayer.getLevel();
             BlockPos pos = serverPlayer.blockPosition();
             Random rng = serverPlayer.getRandom();
@@ -27,7 +26,7 @@ public class LightningStormChallenge extends Challenge {
                 int y = world.getHeight(Heightmap.Types.MOTION_BLOCKING, x, z);
 
                 pos = new BlockPos(x, y, z);
-                if (world.getChunkSource().isEntityTickingChunk(new ChunkPos(pos.getX() >> 4, pos.getZ() >> 4))) {
+                if (world.getChunkSource().isPositionTicking(new ChunkPos(pos).toLong())) {
                     LightningBolt lightningBolt = EntityType.LIGHTNING_BOLT.create(world, null, null, player, pos, MobSpawnType.NATURAL, true, false);
                     if (lightningBolt != null) {
                         world.addFreshEntity(lightningBolt);

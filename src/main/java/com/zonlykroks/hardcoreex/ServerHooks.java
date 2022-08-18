@@ -6,9 +6,9 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
+import net.minecraftforge.event.server.ServerStartedEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.server.FMLServerStartedEvent;
 
 /**
  * Class for server side hooks.
@@ -27,25 +27,11 @@ public class ServerHooks {
      * Handles the post-startup of the server.
      *
      * @param event The event.
-     * @since 0.1
      * @author zOnlyKroks, Qboi123
+     * @since 0.1
      */
     @SubscribeEvent
-    public static void onServerStarted(FMLServerStartedEvent event) {
-//        MinecraftServer server = event.getServer();
-//        CompoundNBT worldData = new CompoundNBT();
-//        ListNBT challengesData = ServerChallengesManager.get().write(new ListNBT());
-//        worldData.put("ChallengesEnabled", challengesData);
-//
-//        try {
-//            worldData = CompressedStreamTools.readCompressed(server.getWorldPath(new FolderName("hardcoreex.dat")).toFile());
-//            ListNBT challengesEnabled = worldData.getList("ChallengesEnabled", 8);
-//            ServerChallengesManager.get().read(challengesEnabled);
-//        } catch (FileNotFoundException ignored) {
-//            firstJoin = true;
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
+    public static void onServerStarted(ServerStartedEvent event) {
     }
 
     /**
@@ -58,8 +44,7 @@ public class ServerHooks {
     @SubscribeEvent
     public static void onEntityJoin(EntityJoinWorldEvent event) {
         Entity entity = event.getEntity();
-        if (entity instanceof ServerPlayer) {
-            ServerPlayer player = (ServerPlayer) entity;
+        if (entity instanceof ServerPlayer player) {
             ServerChallengesManager.get().sendChallenges(player);
         }
     }

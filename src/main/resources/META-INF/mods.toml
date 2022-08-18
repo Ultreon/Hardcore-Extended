@@ -1,5 +1,5 @@
 modLoader = "javafml" #mandatory
-loaderVersion = "[35,)"
+loaderVersion = "[40,)"
 license = "All rights reserved"
 issueTrackerURL = "https://github.com/zOnlyKroks/Hardcore-Extended/issues" #optional
 
@@ -19,13 +19,13 @@ A Mod wich automates the No Damage Challange
 [[dependencies.hardcoreex]] #optional
 modId = "forge" #mandatory
 mandatory = true #mandatory
-versionRange = "[35,)" #mandatory
+versionRange = "[40,)" #mandatory
 ordering = "NONE"
 side = "CLIENT"
 
 [[dependencies.hardcoreex]]
 modId = "minecraft"
 mandatory = true
-versionRange = "[1.16.4,1.17)"
+versionRange = "[1.18.2,1.19)"
 ordering = "NONE"
 side = "BOTH"

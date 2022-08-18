@@ -5,11 +5,11 @@ import com.zonlykroks.hardcoreex.network.packets.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.Connection;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraftforge.fml.network.FMLHandshakeHandler;
-import net.minecraftforge.fml.network.NetworkDirection;
-import net.minecraftforge.fml.network.NetworkRegistry;
-import net.minecraftforge.fml.network.PacketDistributor;
-import net.minecraftforge.fml.network.simple.SimpleChannel;
+import net.minecraftforge.network.HandshakeHandler;
+import net.minecraftforge.network.NetworkDirection;
+import net.minecraftforge.network.NetworkRegistry;
+import net.minecraftforge.network.PacketDistributor;
+import net.minecraftforge.network.simple.SimpleChannel;
 
 import java.util.Objects;
 
@@ -25,7 +25,7 @@ public final class Networking {
 
     static {
         int id = 0;
-        channel = NetworkRegistry.ChannelBuilder.named(HardcoreExtended.rl("network"))
+        channel = NetworkRegistry.ChannelBuilder.named(HardcoreExtended.res("network"))
                 .clientAcceptedVersions(s -> Objects.equals(s, VERSION))
                 .serverAcceptedVersions(s -> Objects.equals(s, VERSION))
                 .networkProtocolVersion(() -> VERSION)
@@ -39,7 +39,7 @@ public final class Networking {
                 .decoder(buffer -> new LoginPacket.Reply())
                 .encoder((msg, buffer) -> {
                 })
-                .consumer(FMLHandshakeHandler.indexFirst((hh, msg, ctx) -> msg.handle(ctx)))
+                .consumer(HandshakeHandler.indexFirst((hh, msg, ctx) -> msg.handle(ctx)))
                 .add();
         channel.messageBuilder(ChallengeFailedPacket.class, id++)
                 .decoder(ChallengeFailedPacket::new)

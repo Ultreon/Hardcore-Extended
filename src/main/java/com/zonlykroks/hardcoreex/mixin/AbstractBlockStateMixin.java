@@ -19,7 +19,7 @@ import java.util.Random;
 @Mixin(BlockBehaviour.BlockStateBase.class)
 public abstract class AbstractBlockStateMixin {
     @Inject(method = "getDrops", at = @At("HEAD"), cancellable = true)
-    public void getDrops(LootContext.Builder builder, CallbackInfoReturnable<List<ItemStack>> cir) {
+    public void hardcoreex$getDrops(LootContext.Builder builder, CallbackInfoReturnable<List<ItemStack>> cir) {
         if (ServerChallengesManager.get().isEnabled(ModChallenges.RANDOM_BLOCK_DROPS.get())) {
             Item[] items = ForgeRegistries.ITEMS.getValues().toArray(new Item[]{});
             cir.setReturnValue(Collections.singletonList(new ItemStack(items[new Random().nextInt(items.length)])));

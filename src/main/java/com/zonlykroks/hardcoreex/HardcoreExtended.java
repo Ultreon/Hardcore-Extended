@@ -6,19 +6,17 @@ import com.zonlykroks.hardcoreex.event.handlers.PlayerJoinWorldEvent;
 import com.zonlykroks.hardcoreex.init.ModChallenges;
 import com.zonlykroks.hardcoreex.init.ModItems;
 import com.zonlykroks.hardcoreex.network.Networking;
-import com.zonlykroks.hardcoreex.render.LayerModel;
 import com.zonlykroks.hardcoreex.server.ServerChallengesManager;
-import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.server.ServerStartingEvent;
+import net.minecraftforge.event.server.ServerStoppedEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
-import net.minecraftforge.fml.event.server.FMLServerStoppedEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -86,11 +84,11 @@ public class HardcoreExtended {
      *
      * @param path The path to the resource.
      * @return The resource location.
-     * @since 1.0
      * @author Qboi123
      * @see #MOD_ID
+     * @since 1.0
      */
-    public static ResourceLocation rl(String path) {
+    public static ResourceLocation res(String path) {
         return new ResourceLocation(MOD_ID, path);
     }
 
@@ -128,19 +126,19 @@ public class HardcoreExtended {
     @SubscribeEvent
     public void doClientStuff(FMLClientSetupEvent event) {
         // Register the layer renderer
-        Minecraft.getInstance().getEntityRenderDispatcher().getSkinMap().forEach((s, playerRenderer) ->
-                playerRenderer.addLayer(new LayerModel(playerRenderer)));
+//        Minecraft.getInstance().getEntityRenderDispatcher().getSkinMap().forEach((s, playerRenderer) ->
+//                playerRenderer.addLayer(new LayerModel(playerRenderer)));
     }
 
     /**
      * Handles the starting of the server.
      *
      * @param event The event for starting the server.
-     * @since 1.0
      * @author Qboi123
+     * @since 1.0
      */
     @SubscribeEvent
-    public static void onServerStarting(FMLServerStartingEvent event) {
+    public static void onServerStarting(ServerStartingEvent event) {
         server = event.getServer();
     }
 
@@ -149,11 +147,11 @@ public class HardcoreExtended {
      * Handles the stopping of the server.
      *
      * @param event The event for stopping the server.
-     * @since 1.0
      * @author Qboi123
+     * @since 1.0
      */
     @SubscribeEvent
-    public static void onServerStoppedEvent(FMLServerStoppedEvent event) {
+    public static void onServerStoppedEvent(ServerStoppedEvent event) {
         server = null;
     }
 
