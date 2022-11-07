@@ -13,6 +13,8 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.LogicalSide;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Marker;
+import org.slf4j.MarkerFactory;
 
 import java.util.Collections;
 import java.util.Objects;
@@ -20,6 +22,7 @@ import java.util.Objects;
 public class ClientChallengeManager extends ChallengeManager {
     @Nullable
     private static ClientChallengeManager instance;
+    private static final Marker MARKER = MarkerFactory.getMarker("Server");
     private static final Object initLock = new Object();
     private static boolean initialized = false;
 
@@ -54,23 +57,31 @@ public class ClientChallengeManager extends ChallengeManager {
 
     public static void onStarted(ChallengesStartedPacket packet) {
         if (instance != null) {
-            instance.start();
+            instance.handleStart();
+        } else {
+            LOGGER.warn(MARKER, "Got challenges started packet while disconnected.");
         }
     }
 
     public static void onEnabled(ChallengeEnabledPacket packet) {
         if (instance != null) {
             instance.enabled.add(Objects.requireNonNull(packet.getChallenge()));
+        } else {
+            LOGGER.warn(MARKER, "Got challenge enabled packet while disconnected.");
         }
     }
 
     public static void onDisabled(ChallengeDisabledPacket packet) {
         if (instance != null) {
             instance.enabled.remove(Objects.requireNonNull(packet.getChallenge()));
+        } else {
+            LOGGER.warn(MARKER, "Got challenge disabled packet while disconnected.");
         }
     }
 
     private static void onDisconnect(ClientPlayerNetworkEvent.LoggedOutEvent event) {
+        LOGGER.debug(MARKER, "Cleaning up challenge manager.");
+
         if (instance != null) {
             instance.enabled.clear();
         }
@@ -78,6 +89,8 @@ public class ClientChallengeManager extends ChallengeManager {
     }
 
     private static void onConnected(ClientPlayerNetworkEvent.LoggedInEvent event) {
+        LOGGER.debug(MARKER, "Connected to a server, setting up client-side.");
+
         instance = new ClientChallengeManager();
     }
 
@@ -85,6 +98,7 @@ public class ClientChallengeManager extends ChallengeManager {
         return instance;
     }
 
+    @Deprecated
     @Override
     public void set(Challenge challenge, boolean value) {
 //        if (value && !enabled.contains(challenge)) {
@@ -94,7 +108,7 @@ public class ClientChallengeManager extends ChallengeManager {
 //        }
     }
 
-    private void start() {
+    public void handleStart() {
         started = true;
         MinecraftForge.EVENT_BUS.post(new ChallengesStartedEvent(Collections.unmodifiableSet(enabled), LogicalSide.CLIENT));
     }
@@ -104,6 +118,8 @@ public class ClientChallengeManager extends ChallengeManager {
     }
 
     public void sendStart() {
-        Networking.sendToServer(new StartChallengesPacket());
+        if (!started) {
+            Networking.sendToServer(new StartChallengesPacket());
+        }
     }
 }

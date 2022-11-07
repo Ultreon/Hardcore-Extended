@@ -11,11 +11,11 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
  *
  * @author Qboi123
  */
-public class NoDamageChallenge extends Challenge {
+public class InstaDeathChallenge extends Challenge {
     /**
      * Constructor for this challenge object.
      */
-    public NoDamageChallenge() {
+    public InstaDeathChallenge() {
         super();
     }
 

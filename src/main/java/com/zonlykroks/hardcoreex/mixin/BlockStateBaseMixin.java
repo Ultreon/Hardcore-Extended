@@ -17,10 +17,11 @@ import java.util.List;
 import java.util.Random;
 
 @Mixin(BlockBehaviour.BlockStateBase.class)
-public abstract class AbstractBlockStateMixin {
+public abstract class BlockStateBaseMixin {
     @Inject(method = "getDrops", at = @At("HEAD"), cancellable = true)
-    public void hardcoreex$getDrops(LootContext.Builder builder, CallbackInfoReturnable<List<ItemStack>> cir) {
-        if (ServerChallengesManager.get().isEnabled(ModChallenges.RANDOM_BLOCK_DROPS.get())) {
+    public void hardcoreex$overrideDrops(LootContext.Builder builder, CallbackInfoReturnable<List<ItemStack>> cir) {
+        ServerChallengesManager manager = ServerChallengesManager.get();
+        if (manager != null && manager.isEnabled(ModChallenges.RANDOM_BLOCK_DROPS.get())) {
             Item[] items = ForgeRegistries.ITEMS.getValues().toArray(new Item[]{});
             cir.setReturnValue(Collections.singletonList(new ItemStack(items[new Random().nextInt(items.length)])));
         }

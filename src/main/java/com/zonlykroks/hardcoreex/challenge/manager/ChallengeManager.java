@@ -14,6 +14,8 @@ import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.LogicalSide;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -21,6 +23,7 @@ import java.util.function.Supplier;
 
 public abstract class ChallengeManager {
     protected final Set<Challenge> enabled = new HashSet<>();
+    protected static final Logger LOGGER = LoggerFactory.getLogger("ChallengeManager");
 
     @Deprecated
     public static final ChallengeManager server = null;

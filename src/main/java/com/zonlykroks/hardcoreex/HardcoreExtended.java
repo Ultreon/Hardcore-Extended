@@ -18,9 +18,9 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * HardcoreExtended Extended Mod class.
@@ -44,7 +44,7 @@ public class HardcoreExtended {
      * The mod's logger.
      * @since 0.1
      */
-    public static final Logger LOGGER = LogManager.getLogger();
+    public static final Logger LOGGER = LoggerFactory.getLogger("HardcoreExtended");
     private static MinecraftServer server;
 
     /**

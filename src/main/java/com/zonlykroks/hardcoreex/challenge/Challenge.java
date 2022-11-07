@@ -14,17 +14,30 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.BaseSpawner;
 import net.minecraft.world.level.GameType;
+import net.minecraft.world.level.SpawnData;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
+import net.minecraftforge.event.entity.living.LivingEvent;
+import net.minecraftforge.event.entity.living.LivingSpawnEvent;
+import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.registries.ForgeRegistryEntry;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Marker;
+import org.slf4j.MarkerFactory;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Objects;
@@ -36,6 +49,8 @@ import java.util.Objects;
 @ParametersAreNonnullByDefault
 @SuppressWarnings("unused")
 public abstract class Challenge extends ForgeRegistryEntry<Challenge> implements IChallengeProvider {
+    protected static final Logger LOGGER = LoggerFactory.getLogger("Challenges");
+    protected final Marker marker = MarkerFactory.getMarker(getClass().getSimpleName());
     private boolean enabled = false;
     private ForgeConfigSpec.BooleanValue configSpec;
 
@@ -119,6 +134,30 @@ public abstract class Challenge extends ForgeRegistryEntry<Challenge> implements
         if (event.phase == TickEvent.Phase.START) {
             playerTick(event.player);
         }
+    }
+
+    @SubscribeEvent
+    public final void onCheckSpawn(@NotNull LivingSpawnEvent.CheckSpawn event) {
+        if (event.getEntity().getLevel().isClientSide) return;
+
+        if (checkSpawn(event.getEntityLiving(), new Vec3(event.getX(), event.getY(), event.getZ()), event.getSpawner(), event.getSpawnReason())) {
+            event.setResult(Event.Result.DENY); // Bruh needs to be a result, not cancel.
+        }
+    }
+
+    @SubscribeEvent
+    public final void onLivingUpdate(@NotNull LivingEvent.LivingUpdateEvent event) {
+        if (event.getEntity().getLevel().isClientSide) return;
+
+        event.setCanceled(livingUpdate(event.getEntityLiving()));
+    }
+
+    protected boolean checkSpawn(LivingEntity entity, Vec3 vec3, @Nullable BaseSpawner spawner, MobSpawnType spawnReason) {
+        return false;
+    }
+
+    protected boolean livingUpdate(LivingEntity entity) {
+        return false;
     }
 
     /**
@@ -241,6 +280,10 @@ public abstract class Challenge extends ForgeRegistryEntry<Challenge> implements
     }
 
     protected void serverTick(@NotNull MinecraftServer server) {
+
+    }
+
+    protected void onSpawnEntity(@NotNull Entity entity, @NotNull SpawnData data, @NotNull MobSpawnType reason) {
 
     }
 }

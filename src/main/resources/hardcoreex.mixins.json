@@ -4,12 +4,16 @@
   "compatibilityLevel": "JAVA_8",
   "refmap": "hardcoreex.refmap.json",
   "mixins": [
-    "AbstractBlockStateMixin",
+    "BlockStateBaseMixin",
     "AbstractSkeletonEntityMixin",
     "MinecraftServerMixin",
     "MobEntityMixin",
     "PlayerEntityMixin",
-    "ZombieEntityMixin"
+    "ZombieEntityMixin",
+    "accessors.CreeperAccessor",
+    "accessors.EntityAccessor",
+    "accessors.MushroomCowAccessor",
+    "accessors.VillagerAccessor"
   ],
   "minVersion": "0.8",
   "client": [

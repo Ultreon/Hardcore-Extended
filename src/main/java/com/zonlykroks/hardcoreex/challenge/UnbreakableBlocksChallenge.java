@@ -5,9 +5,9 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
-public class NoBlockBreakingChallenge extends Challenge {
+public class UnbreakableBlocksChallenge extends Challenge {
 
-    public NoBlockBreakingChallenge() {
+    public UnbreakableBlocksChallenge() {
         super();
     }
 

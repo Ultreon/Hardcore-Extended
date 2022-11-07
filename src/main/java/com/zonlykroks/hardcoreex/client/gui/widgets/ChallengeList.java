@@ -31,18 +31,17 @@ import javax.annotation.ParametersAreNonnullByDefault;
  *
  * @author Qboi123
  */
-@SuppressWarnings({"unused"})
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
 @OnlyIn(Dist.CLIENT)
 public class ChallengeList extends ObjectSelectionList<ChallengeList.ChallengeEntry> {
     private static final ResourceLocation ICONS = new ResourceLocation("textures/gui/resource_packs.png");
-    private static final ResourceLocation BACKGROUND_LOCATION = new ResourceLocation(HardcoreExtended.MOD_ID, "textures/empty.png");
+    @SuppressWarnings("unused")
     private static final Component INCOMPATIBLE_TEXT = new TranslatableComponent("challenges.incompatible");
     private static final Component INCOMPATIBLE_CONFIRM_TITLE = new TranslatableComponent("challenges.incompatible.confirm.title");
     private final Component title;
     private final ChallengeScreen screen;
-    private final ClientChallengeManager temp;
+    private final ClientChallengeManager manager;
 
     /**
      * Constructor for the challenge list widget.
@@ -55,7 +54,7 @@ public class ChallengeList extends ObjectSelectionList<ChallengeList.ChallengeEn
     public ChallengeList(ChallengeScreen screen, Minecraft minecraft, int widthIn, int heightIn, Component title) {
         super(minecraft, widthIn, heightIn, 32, heightIn - 55 + 4, 36);
         this.screen = screen;
-        this.temp = screen.getManager();
+        this.manager = screen.getManager();
         this.title = title;
         this.centerListVertically = false;
         this.setRenderHeader(true, (int) (9.0F * 1.5F));
@@ -76,11 +75,13 @@ public class ChallengeList extends ObjectSelectionList<ChallengeList.ChallengeEn
 
     @OnlyIn(Dist.CLIENT)
     public static class ChallengeEntry extends ObjectSelectionList.Entry<ChallengeEntry> {
+        private static final ResourceLocation DEFAULT_TEXTURE = HardcoreExtended.res("textures/gui/challenges/default.png");
         private final ChallengeList list;
         protected final Minecraft mc;
         protected final Screen screen;
         private final Challenge challenge;
-        private final FormattedCharSequence reorderingLocalizedName;
+        private final FormattedCharSequence nameReorder;
+
         // Todo: allow creation of custom challenges.
 //      private final IReorderingProcessor reorderingIncompatible;
 
@@ -97,7 +98,7 @@ public class ChallengeList extends ObjectSelectionList<ChallengeList.ChallengeEn
             this.screen = screen;
             this.challenge = challenge;
             this.list = list;
-            this.reorderingLocalizedName = getReordering(minecraft, challenge.getDescription());
+            this.nameReorder = getReordering(minecraft, challenge.getDescription());
 
             // Todo: allow creation of custom challenges.
 //         this.reorderingIncompatible = cacheName(p_i241201_1_, ChallengeList.INCOMPATIBLE_TEXT);
@@ -134,7 +135,7 @@ public class ChallengeList extends ObjectSelectionList<ChallengeList.ChallengeEn
          * @param p_230432_9_  ...
          * @param partialTicks the {@link Minecraft#getFrameTime()}  render partial ticks}.
          */
-        @SuppressWarnings({"CommentedOutCode", "SpellCheckingInspection"})
+        @SuppressWarnings({"SpellCheckingInspection"})
         public void render(PoseStack matrixStack, int unknown1, int subY, int subX, int unknown2, int unknown3, int mouseX, int mouseY, boolean p_230432_9_, float partialTicks) {
             // Todo: allow creation of custom challenges.
 //         ChallengeCompatibility challengeCompatibility = this.pack.getCompatibility();
@@ -143,17 +144,18 @@ public class ChallengeList extends ObjectSelectionList<ChallengeList.ChallengeEn
 //            AbstractGui.fill(p_230432_1_, p_230432_4_ - 1, p_230432_3_ - 1, p_230432_4_ + p_230432_5_ - 9, p_230432_3_ + p_230432_6_ + 1, -8978432);
 //         }
 
-            RenderSystem.setShaderTexture(0, this.challenge.getTextureLocation());
+            // Checking for if the texture exists fixes log getting overloaded with exceptions.
+            ResourceLocation texture = this.challenge.getTextureLocation();
+            RenderSystem.setShaderTexture(0, mc.getResourceManager().hasResource(texture) ? texture : DEFAULT_TEXTURE);
+
             RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
             GuiComponent.blit(matrixStack, subX, subY, 0.0F, 0.0F, 32, 32, 32, 32);
-            FormattedCharSequence reorderingLocalizedName = this.reorderingLocalizedName;
-//         IBidiRenderer ibidirenderer = this.descriptionDisplayCache;
-            if (this.showHoverOverlay() && (this.mc.options.touchscreen || p_230432_9_)) {
+            //         IBidiRenderer ibidirenderer = this.descriptionDisplayCache;
+            if (this.mc.options.touchscreen || p_230432_9_) {
                 RenderSystem.setShaderTexture(0, ChallengeList.ICONS);
                 GuiComponent.fill(matrixStack, subX, subY, subX + 32, subY + 32, -1601138544);
                 RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
                 int i = mouseX - subX;
-                int j = mouseY - subY;
 
                 // Todo: allow creation of custom challenges.
 //            if (!this.pack.getCompatibility().isCompatible()) {
@@ -162,7 +164,7 @@ public class ChallengeList extends ObjectSelectionList<ChallengeList.ChallengeEn
 //            }
 
                 // Normal arrow button state.
-                if (list.temp.isDisabled(this.challenge)) {
+                if (list.manager.isDisabled(this.challenge)) {
                     // Check hover state.
                     if (i < 32) {
                         // Hovered.
@@ -171,7 +173,7 @@ public class ChallengeList extends ObjectSelectionList<ChallengeList.ChallengeEn
                         // Non-hovered.
                         GuiComponent.blit(matrixStack, subX, subY, 0.0F, 0.0F, 32, 32, 256, 256);
                     }
-                } else if (list.temp.isEnabled(this.challenge)) {
+                } else if (list.manager.isEnabled(this.challenge)) {
                     // Check hover state.
                     if (i < 16) {
                         // Hovered.
@@ -183,29 +185,23 @@ public class ChallengeList extends ObjectSelectionList<ChallengeList.ChallengeEn
                 }
             }
 
-            this.mc.font.drawShadow(matrixStack, reorderingLocalizedName, (float) (subX + 32 + 2), (float) (subY + 1), 16777215);
+            this.mc.font.drawShadow(matrixStack, this.nameReorder, (float) (subX + 32 + 2), (float) (subY + 1), 16777215);
 //         ibidirenderer.renderLeftAligned(matrixStack, subX + 32 + 2, subY + 12, 10, 8421504);
-        }
-
-        private boolean showHoverOverlay() {
-//         return !this.challenge.isFixedPosition() || !this.challenge.isRequired();
-            return true;
         }
 
         public boolean mouseClicked(double mouseX, double mouseY, int button) {
             double deltaX = mouseX - (double) this.list.getRowLeft();
-            double deltaY = mouseY - (double) this.list.getRowTop(this.list.children().indexOf(this));
-            if (this.showHoverOverlay() && deltaX <= 32.0D) {
-                if (list.temp.isDisabled(this.challenge)) {
+            if (deltaX <= 32.0D) {
+                if (list.manager.isDisabled(this.challenge)) {
                     ChallengeCompatibility compatibility = this.challenge.getCompatibility();
                     if (compatibility.isCompatible()) {
-                        list.temp.enable(this.challenge);
+                        list.manager.enable(this.challenge);
                     } else {
                         Component component = compatibility.getConfirmMessage();
                         this.mc.setScreen(new ConfirmScreen((p_238921_1_) -> {
                             this.mc.setScreen(this.screen);
                             if (p_238921_1_) {
-                                list.temp.enable(this.challenge);
+                                list.manager.enable(this.challenge);
                             }
 
                         }, ChallengeList.INCOMPATIBLE_CONFIRM_TITLE, component));
@@ -216,9 +212,9 @@ public class ChallengeList extends ObjectSelectionList<ChallengeList.ChallengeEn
                     return true;
                 }
 
-                if (deltaX < 16.0D && list.temp.isEnabled(this.challenge)
+                if (deltaX < 16.0D && list.manager.isEnabled(this.challenge)
                 ) {
-                    list.temp.disable(this.challenge);
+                    list.manager.disable(this.challenge);
                     this.list.screen.reloadAll();
                     return true;
                 }

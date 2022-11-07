@@ -1,5 +1,6 @@
 package com.zonlykroks.hardcoreex.network.packets;
 
+import com.zonlykroks.hardcoreex.HardcoreExtended;
 import com.zonlykroks.hardcoreex.client.ClientChallengeManager;
 import com.zonlykroks.hardcoreex.network.PacketToClient;
 import net.minecraft.client.Minecraft;
@@ -17,8 +18,9 @@ public class ChallengesStartedPacket extends PacketToClient<ChallengesStartedPac
 
     @Override
     protected void handle(Connection connection) {
+        HardcoreExtended.LOGGER.info("Server said that the challenge has been started!");
         Minecraft.getInstance().setScreen(null);
-        ClientChallengeManager.get().sendStart();
+        ClientChallengeManager.get().handleStart();
     }
 
     public void toBytes(FriendlyByteBuf buffer) {

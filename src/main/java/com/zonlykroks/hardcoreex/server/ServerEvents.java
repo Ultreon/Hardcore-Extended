@@ -1,5 +1,6 @@
-package com.zonlykroks.hardcoreex;
+package com.zonlykroks.hardcoreex.server;
 
+import com.zonlykroks.hardcoreex.HardcoreExtended;
 import com.zonlykroks.hardcoreex.event.handlers.PlayerJoinWorldEvent;
 import com.zonlykroks.hardcoreex.server.ServerChallengesManager;
 import net.minecraft.server.level.ServerPlayer;
@@ -17,7 +18,7 @@ import net.minecraftforge.fml.common.Mod;
  * @since 0.1
  */
 @Mod.EventBusSubscriber(value = {Dist.CLIENT, Dist.DEDICATED_SERVER}, modid = HardcoreExtended.MOD_ID)
-public class ServerHooks {
+public class ServerEvents {
     /**
      * @since 0.1
      */

@@ -25,7 +25,7 @@ import java.util.List;
  *
  * @author zOnlyKroks, Qboi123
  */
-public class TNTRainChallenge extends Challenge {
+public class TNTDropsOnYouChallenge extends Challenge {
     private int ticks;
     private boolean started = false;
     private boolean joined = false;
@@ -33,7 +33,7 @@ public class TNTRainChallenge extends Challenge {
     private final int delay = 20 * delaySecs;
     private Vec3 startingCoords;
 
-    public TNTRainChallenge() {
+    public TNTDropsOnYouChallenge() {
         super();
     }
 
@@ -67,9 +67,7 @@ public class TNTRainChallenge extends Challenge {
     @Override
     protected void serverTick(@NotNull MinecraftServer server) {
         List<ServerPlayer> players = server.getPlayerList().getPlayers();
-        players.forEach(player -> {
-            player.displayClientMessage(new TextComponent(Math.round((delay - ticks) / 20f) + " seconds!"), true);
-        });
+        players.forEach(player -> player.displayClientMessage(new TextComponent(Math.round((delay - ticks) / 20f) + " seconds!"), true));
 
         if (started) {
             ticks++;
@@ -83,14 +81,12 @@ public class TNTRainChallenge extends Challenge {
     private void start(ServerPlayer player) {
         started = true;
         List<ServerPlayer> players = player.getLevel().getServer().getPlayerList().getPlayers();
-        players.forEach(p -> {
-            p.displayClientMessage(new TextComponent("TNT rain started!"), true);
-        });
+        players.forEach(p -> p.displayClientMessage(new TextComponent("TNT rain started!"), true));
 
     }
 
     @SubscribeEvent
-    protected void onPlayerMove(EntityJoinWorldEvent event) {
+    protected void handlePlayerJoining(EntityJoinWorldEvent event) {
         Entity entity = event.getEntity();
         if (entity instanceof ServerPlayer && !started) {
             joined = true;
@@ -100,15 +96,14 @@ public class TNTRainChallenge extends Challenge {
 
     private void execute(Player player) {
         BlockPos position = player.blockPosition();
-        if (player instanceof ServerPlayer) {
-            ServerPlayer p = (ServerPlayer) player;
+        if (player instanceof ServerPlayer p) {
             if (p.gameMode.getGameModeForPlayer() == GameType.SURVIVAL) {
                 ServerLevel serverWorld = p.getLevel();
                 PrimedTnt entity = (PrimedTnt) EntityType.TNT.spawn(serverWorld, null, player, position.offset(0, 1, 0), MobSpawnType.NATURAL, false, false);
                 if (entity != null) {
                     entity.setFuse(20 * 5);
                 } else {
-                    HardcoreExtended.LOGGER.warn("TNT entity was spawned as null in a tnt rain challenge.");
+                    HardcoreExtended.LOGGER.warn(marker, "TNT entity was spawned as null.");
                 }
             }
         }

@@ -21,6 +21,8 @@ import net.minecraftforge.event.server.ServerStartingEvent;
 import net.minecraftforge.event.server.ServerStoppingEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Marker;
+import org.slf4j.MarkerFactory;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -38,6 +40,7 @@ public class ServerChallengesManager extends ChallengeManager {
     private static ServerChallengesManager instance;
 
     private static final Object initLock = new Object();
+    private static final Marker MARKER = MarkerFactory.getMarker("Server");
     private static boolean initialized;
     private boolean started = false;
 
@@ -58,6 +61,8 @@ public class ServerChallengesManager extends ChallengeManager {
     }
 
     private static void serverStart(ServerStartingEvent event) {
+        LOGGER.debug(MARKER, "Server is starting.");
+
         instance = new ServerChallengesManager(event.getServer());
 
         MinecraftServer server = event.getServer();
@@ -77,10 +82,13 @@ public class ServerChallengesManager extends ChallengeManager {
     }
 
     private static void serverStop(ServerStoppingEvent event) {
+        LOGGER.debug(MARKER, "Server is stopping.");
+
         if (instance != null) {
             instance.disableAll();
         }
 
+        initialized = false;
         instance = null;
     }
 

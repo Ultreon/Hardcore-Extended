@@ -13,9 +13,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(CreateWorldScreen.class)
 public abstract class WorldSelectionScreenMixin {
     @Shadow
-    private CreateWorldScreen.SelectedGameMode gameMode;
-
-    @Shadow
     protected abstract void setGameMode(CreateWorldScreen.SelectedGameMode p_228200_1_);
 
     @Shadow
